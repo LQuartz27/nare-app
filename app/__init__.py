@@ -2,22 +2,22 @@ from flask import Flask, redirect, render_template, url_for
 import pyodbc
 from sqlalchemy import create_engine, text
 from app.forms import PreActualizacionForm
-from app.queries import *
+from app.api import *
+from app.api.queries import *
 from app.database import *
 import os
 
-template_dir = os.path.dirname(os.path.abspath(os.path.dirname(__file__)))
-print(__file__)
-print(template_dir)
-template_dir = os.path.join(template_dir, 'templates')
-print(template_dir)
+# template_dir = os.path.dirname(os.path.abspath(os.path.dirname(__file__)))
+# print(__file__)
+# print(template_dir)
+# template_dir = os.path.join(template_dir, 'templates')
+# print(template_dir)
 
 app = Flask(__name__)  # , template_folder=template_dir)
 app.config['SECRET_KEY'] = 'PyTmKoIeRfD67.2VbQ'
+app.register_blueprint(api_blueprint)
 
 print(connection_url)
-
-
 # print(engine)
 
 
