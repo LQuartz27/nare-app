@@ -7,7 +7,9 @@
                         <h5 class="card-text">Actualización de Pozos</h5>
                         <br>
                         <div class="d-grid gap-2 w-50 mx-auto">
-                          <a class="btn btn-dark" href={{ url_for('preactualizacion') }} role="button">PRE ACTUALIZACION</a><i class="fas fa-info-circle"></i>
-                          <a class="btn btn-dark" href={{ url_for('home') }}  role="button">PROCESAMIENTO DDR</a><i class="fas fa-info-circle"></i>
+                          <a class="btn btn-dark" href={{ url_for( 'comp_status' ) }} role="button">BORRADO COMP. STATUS</a>
+                          <a class="btn btn-dark" href={{ url_for( 'ajustar_md' ) }}  role="button">AJUSTE MDs</a>
+                          <a class="btn btn-dark" href={{ url_for( 'home' ) }}  role="button">PROCESAMIENTO DDR</a>
+                         
                         </div>
 {% endblock %}

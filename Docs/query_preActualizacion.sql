@@ -20,8 +20,6 @@ WHERE well_id = 'Mj4YfwadTW' -- Well ID
 
 -- MOB
 
-
-
 Update DM_EVENT set
 
 event_code= 'MOB'

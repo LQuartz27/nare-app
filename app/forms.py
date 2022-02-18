@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, SelectField
+from wtforms import StringField, SubmitField, SelectField
 from wtforms.validators import DataRequired, ValidationError
 
 def validate_dropdowns(form, field):
@@ -9,10 +9,6 @@ def validate_dropdowns(form, field):
 
 class PreActualizacionForm(FlaskForm):
     nombrepozo = SelectField('NOMBRE DEL POZO',
-                             choices=[(None, 'Well Common Name'),
-                                      ('MOR BF 05', 'MOR BF 05'),
-                                      ('MORC0002N', 'MORICHE N 02'),
-                                      ('JAZM0001AN', 'JAZ AN 01')],
                              validators=[DataRequired(), validate_dropdowns])
 
     td_pozo = StringField('TD DEL POZO', validators=[DataRequired()])
@@ -29,5 +25,13 @@ class PreActualizacionForm(FlaskForm):
     preactualizar_btn = SubmitField('Pre Actualizar')
 
 
-class TomaEvidenciaForm(FlaskForm):
-    pass
+class ProcesoMasivoPozoEspecificoForm(FlaskForm):
+    nombrepozo = StringField('NOMBRE DEL POZO', validators=[DataRequired()], id='well-name')
+    submit_btn = SubmitField('Borrar Status')
+
+class AjusteMDsForm(FlaskForm):
+    nombrepozo = StringField('NOMBRE DEL POZO', validators=[DataRequired()], id='well-name')
+
+    elevacion_mesa_inicial = StringField('ELEVACION MESA INICIAL', validators=[DataRequired()])
+    elevacion_mesa_final = StringField('ELEVACION MESA FINAL', validators=[DataRequired()])
+    submit_btn = SubmitField('Ajustar MDs')

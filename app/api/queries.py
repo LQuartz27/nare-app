@@ -3,13 +3,27 @@ SELECT DISTINCT CD_WELL.well_common_name
 FROM CD_WELL
 """
 
+def get_well_id_query(well_common_name):
 
-WELL_ID_QUERY = """
-SELECT
-    well_id
-FROM CD_WELL
-WHERE well_common_name = '{}' -- NOMBRE DEL POZO
-"""
+	WELL_ID_QUERY = """
+	SELECT well_id
+	FROM CD_WELL
+	WHERE well_common_name = '{}' -- NOMBRE DEL POZO
+	""".format(well_common_name)
+
+	return WELL_ID_QUERY
+
+def get_borrado_component_status_query(well_id):
+
+	BORRADO_COMPONENT_STATUS_QUERY = """
+			--Borra por pozo, Lineas del Status de los componentes WE
+	DELETE
+	FROM CD_ASSEMBLY_COMP_STATUS
+	WHERE well_id = '{}'
+	""".format(well_id)
+
+	return BORRADO_COMPONENT_STATUS_QUERY
+
 
 GET_TO_UPDATE_DATA_query = """
 Select 

@@ -1,11 +1,13 @@
-from flask import Flask, redirect, render_template, url_for
-import pyodbc
+import json
+import requests
 from sqlalchemy import create_engine, text
-from app.forms import PreActualizacionForm
+from flask import Flask, flash, redirect, render_template, request, url_for
+
 from app.api import *
-from app.api.queries import *
 from app.database import *
-import os
+from app.api.queries import *
+
+from app.forms import *
 
 # template_dir = os.path.dirname(os.path.abspath(os.path.dirname(__file__)))
 # print(__file__)
@@ -17,7 +19,7 @@ app = Flask(__name__)  # , template_folder=template_dir)
 app.config['SECRET_KEY'] = 'PyTmKoIeRfD67.2VbQ'
 app.register_blueprint(api_blueprint)
 
-print(connection_url)
+#print(connection_url)
 # print(engine)
 
 
@@ -31,27 +33,94 @@ def home():
     return render_template('home.html')
 
 
+@app.route('/deleteCompStatus', methods=['GET','POST'])
+def comp_status():
+
+    ROOT = request.url_root
+    # print('REQUEST ROOT: {}'.format(ROOT))
+
+    form = ProcesoMasivoPozoEspecificoForm()
+
+    context = {
+        'form': form,
+    }
+
+    if form.validate_on_submit():
+        nombrepozo = form.nombrepozo.data
+
+        get_well_id_url = ROOT + url_for('api.wellid', wellname=nombrepozo)
+
+        response = requests.get(get_well_id_url)
+        data = json.loads(response.content.decode("utf-8"))
+        well_id = data['WELL ID']
+
+        print('NOMBRE DEL POZO')
+        print(nombrepozo)
+        print('WELL ID')
+        print(well_id)
+
+        del_comp_status_url = ROOT + url_for('api.del_component_status', well_id=well_id)
+
+        # response = requests.get(del_comp_status_url)
+        # num_registros_eliminados = json.loads(response.content.decode("utf-8"))['num_registros_eliminados']
+
+        flash('Se eliminaron XX registros')
+
+        return redirect(url_for('comp_status'))
+   
+    return render_template('component_status.html', **context)
+
+
+@app.route('/ajusteMDs', methods=['GET','POST'])
+def ajustar_md():
+
+    ROOT = request.url_root
+    # print('REQUEST ROOT: {}'.format(ROOT))
+
+    form = AjusteMDsForm()
+
+    context = {
+        'form': form,
+    }
+
+    if form.validate_on_submit():
+        nombrepozo = form.nombrepozo.data
+        elevacion_mesa_inicial = form.elevacion_mesa_inicial.data
+        elevacion_mesa_final = form.elevacion_mesa_final.data
+
+        get_well_id_url = ROOT + url_for('api.wellid', wellname=nombrepozo)
+
+        response = requests.get(get_well_id_url)
+        data = json.loads(response.content.decode("utf-8"))
+        well_id = data['WELL ID']
+
+        print('NOMBRE DEL POZO')
+        print(nombrepozo)
+        print('WELL ID')
+        print(well_id)
+
+        del_comp_status_url = ROOT + url_for('api.del_component_status', well_id=well_id)
+
+        # response = requests.get(del_comp_status_url)
+        # num_registros_eliminados = json.loads(response.content.decode("utf-8"))['num_registros_eliminados']
+
+        flash('Se eliminaron XX registros')
+
+        return redirect(url_for('ajustar_md'))
+   
+    return render_template('ajuste_md.html', **context)
+
+
 @app.route('/preactualizacion', methods=['GET', 'POST'])
 def preactualizacion():
-    engine = create_engine(connection_url)
 
     preactualizacion_form = PreActualizacionForm()
 
-    wellcommon_names = [(None, 'Well Common Name')]
+    wellcommon_names_choices, _ = get_well_common_names()
+    print(wellcommon_names_choices)
+    print(_)
 
-    with engine.connect() as connection:
-        # WELL_COMMON_NAMES_QUERY
-        result_cursor = connection.execute(text(WELL_COMMON_NAMES_QUERY))
-        ddbb_wellnames_result = result_cursor.fetchall()
-        ddbb_wellnames_list = [tupla[0] for tupla in ddbb_wellnames_result if tupla[0]]
-        # print(type(ddbb_wellnames_list))
-        print(ddbb_wellnames_list)
-
-    wellcommon_names.extend(
-        sorted([(wellname.strip(), wellname) for wellname in ddbb_wellnames_list], key=lambda variable: variable[0]))
-
-    preactualizacion_form.nombrepozo.choices = wellcommon_names
-
+    preactualizacion_form.nombrepozo.choices = wellcommon_names_choices
     context = {
         'preactualizacion_form': preactualizacion_form
     }

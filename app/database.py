@@ -1,6 +1,6 @@
 from sqlalchemy.engine import URL
-from sqlalchemy import create_engine
-
+from sqlalchemy import create_engine, text
+from app.api.queries import WELL_COMMON_NAMES_QUERY
 
 # CONNECTION CREDENTIALS
 DBServer = 'SQLSERVER'
@@ -28,8 +28,24 @@ connection_url = URL.create(
     },
 )
 #engine = create_engine(connection_url)
-print('Module database', connection_url)
+#print('Module database', connection_url)
 
+def get_well_common_names():
+    engine = create_engine(connection_url)
 
+    wellcommon_names = [(None, 'Well Common Name')]
+
+    with engine.connect() as connection:
+        # WELL_COMMON_NAMES_QUERY
+        result_cursor = connection.execute(text(WELL_COMMON_NAMES_QUERY))
+        ddbb_wellnames_result = result_cursor.fetchall()
+        ddbb_wellnames_list = [tupla[0] for tupla in ddbb_wellnames_result if tupla[0]]
+        # print(type(ddbb_wellnames_list))
+        #print(ddbb_wellnames_list)
+
+    wellcommon_names.extend(
+        sorted([(wellname.strip(), wellname) for wellname in ddbb_wellnames_list], key=lambda variable: variable[0]))
+
+    return wellcommon_names, ddbb_wellnames_list
 
 
