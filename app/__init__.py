@@ -19,7 +19,7 @@ app = Flask(__name__)  # , template_folder=template_dir)
 app.config['SECRET_KEY'] = 'PyTmKoIeRfD67.2VbQ'
 app.register_blueprint(api_blueprint)
 
-#print(connection_url)
+# print(connection_url)
 # print(engine)
 
 
@@ -33,7 +33,7 @@ def home():
     return render_template('home.html')
 
 
-@app.route('/deleteCompStatus', methods=['GET','POST'])
+@app.route('/deleteCompStatus', methods=['GET', 'POST'])
 def comp_status():
 
     ROOT = request.url_root
@@ -59,19 +59,20 @@ def comp_status():
         print('WELL ID')
         print(well_id)
 
-        del_comp_status_url = ROOT + url_for('api.del_component_status', well_id=well_id)
+        del_comp_status_url = ROOT + \
+            url_for('api.del_component_status', well_id=well_id)
 
         # response = requests.get(del_comp_status_url)
-        # num_registros_eliminados = json.loads(response.content.decode("utf-8"))['num_registros_eliminados']
+        # num_registros_eliminados = json.loads(response.content.decode("utf-8"))['num_registros_afectados']
 
         flash('Se eliminaron XX registros')
 
         return redirect(url_for('comp_status'))
-   
+
     return render_template('component_status.html', **context)
 
 
-@app.route('/ajusteMDs', methods=['GET','POST'])
+@app.route('/ajusteMDs', methods=['GET', 'POST'])
 def ajustar_md():
 
     ROOT = request.url_root
@@ -98,16 +99,25 @@ def ajustar_md():
         print(nombrepozo)
         print('WELL ID')
         print(well_id)
+        print('ELEVACION INICIAL')
+        print(elevacion_mesa_inicial)
+        print('ELEVACION FINAL')
+        print(elevacion_mesa_final)
 
-        del_comp_status_url = ROOT + url_for('api.del_component_status', well_id=well_id)
+        # ajustar_MDs_url = ROOT + \
+        #     url_for('api.ajustar_MDs')
 
-        # response = requests.get(del_comp_status_url)
-        # num_registros_eliminados = json.loads(response.content.decode("utf-8"))['num_registros_eliminados']
+        # response = requests.get(ajustar_MDs_url, params={"elev_mesa_0": elevacion_mesa_inicial,
+        #                                                  "elev_mesa_1": elevacion_mesa_final,
+        #                                                  "well_id":well_id
+        #                                                 }
+        #                         )
+        # num_registros_actualizados = json.loads(response.content.decode("utf-8"))['num_registros_afectados']
 
-        flash('Se eliminaron XX registros')
+        flash('Se actualizaron XX registros')
 
         return redirect(url_for('ajustar_md'))
-   
+
     return render_template('ajuste_md.html', **context)
 
 

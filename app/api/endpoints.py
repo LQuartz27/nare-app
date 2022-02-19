@@ -1,5 +1,5 @@
 from urllib import response
-from  flask import jsonify, url_for
+from flask import jsonify, request
 from itsdangerous import json
 from sqlalchemy import create_engine, text
 from . import api_blueprint
@@ -11,6 +11,7 @@ from app.database import *
 @api_blueprint.route('/')
 def api_root():
     return 'Api root'
+
 
 @api_blueprint.route('/wellnames')
 def well_names():
@@ -36,8 +37,8 @@ def wellid(wellname):
 
     well_id = data[0][0]
 
-    response = {'WELL COMMON NAME':wellname,
-                'WELL ID':well_id}
+    response = {'WELL COMMON NAME': wellname,
+                'WELL ID': well_id}
 
     return jsonify(response)
 
@@ -46,14 +47,37 @@ def wellid(wellname):
 def del_component_status(well_id):
 
     engine = create_engine(connection_url)
-    
+
     BORRAR_COMP_STATUS_QUERY = get_borrado_component_status_query(well_id)
 
     with engine.connect() as connection:
         cursor_result = connection.execute(text(BORRAR_COMP_STATUS_QUERY))
-    
-    registros_eliminados = cursor_result.rowcount
 
-    response = {"num_registros_eliminados": registros_eliminados}
+    registros_afectados = cursor_result.rowcount
+
+    response = {"num_registros_afectados": registros_afectados}
+
+    return jsonify(response)
+
+
+@api_blueprint.route('/ajustarMD')
+def ajustar_MDs():
+
+    engine = create_engine(connection_url)
+
+    elev_mesa_0 = request.args.get('elev_mesa_0', None)
+    elev_mesa_1 = request.args.get('elev_mesa_1', None)
+    well_id = request.args.get('well_id', None)
+
+    delta = elev_mesa_1 - elev_mesa_0
+
+    AJUSTE_MD_QUERY = get_ajuste_MDs_query(delta, well_id)
+
+    with engine.connect() as connection:
+        cursor_result = connection.execute(text(AJUSTE_MD_QUERY))
+
+    registros_afectados = cursor_result.rowcount
+
+    response = {"num_registros_afectados": registros_afectados}
 
     return jsonify(response)
