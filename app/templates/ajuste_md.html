@@ -29,35 +29,22 @@
             </div>
         </div>
     </div>
-    {#                     ELEVACION MESA ROTARIA - INICIAL                              #}
-    <p>{{ form.elevacion_mesa_inicial.label(class="form-label") }}</p>
+    {#                     DELTA A AJUSTAR                              #}
+    <p>{{ form.delta.label(class="form-label") }}</p>
     <div class="container">
 
         <div class="row justify-content-center">
             <div class="col-6 w-75">
-                {{ form.elevacion_mesa_inicial(class="form-control") }}
-                {% for error in form.elevacion_mesa_inicial.errors %}
+                {{ form.delta(class="form-control") }}
+                {% for error in form.delta.errors %}
                     {{ error }}
-                {% endfor %}
-            </div>
-        </div>
-    </div>
-    {#                     ELEVACION MESA ROTARIA - FINAL                              #}
-    <p>{{ form.elevacion_mesa_final.label(class="form-label") }}</p>
-    <div class="container">
-
-        <div class="row justify-content-center">
-            <div class="col-6 w-75">
-                {{ form.elevacion_mesa_final(class="form-control") }}
-                {% for error in form.elevacion_mesa_final.errors %}
-                {{ error }}
                 {% endfor %}
             </div>
         </div>
     </div>
     <br>
 
-{#                        Consultar Datos del Pozo  #}
+{#                        Ejecutar Form  #}
     <div class="d-grid gap-2 w-50 mx-auto">
         {{ form.submit_btn(class="btn btn-danger", href="{{ url_for('home') }}") }}
         <a class="btn btn-secondary" href={{ url_for( 'home' ) }}  role="button">VOLVER</a>

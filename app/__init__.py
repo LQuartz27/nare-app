@@ -62,10 +62,10 @@ def comp_status():
         del_comp_status_url = ROOT + \
             url_for('api.del_component_status', well_id=well_id)
 
-        # response = requests.get(del_comp_status_url)
-        # num_registros_eliminados = json.loads(response.content.decode("utf-8"))['num_registros_afectados']
+        response = requests.get(del_comp_status_url)
+        num_registros_eliminados = json.loads(response.content.decode("utf-8"))['num_registros_afectados']
 
-        flash('Se eliminaron XX registros')
+        flash('Se eliminaron {} registros'.format(num_registros_eliminados))
 
         return redirect(url_for('comp_status'))
 
@@ -86,8 +86,7 @@ def ajustar_md():
 
     if form.validate_on_submit():
         nombrepozo = form.nombrepozo.data
-        elevacion_mesa_inicial = form.elevacion_mesa_inicial.data
-        elevacion_mesa_final = form.elevacion_mesa_final.data
+        delta = form.delta.data
 
         get_well_id_url = ROOT + url_for('api.wellid', wellname=nombrepozo)
 
@@ -99,22 +98,21 @@ def ajustar_md():
         print(nombrepozo)
         print('WELL ID')
         print(well_id)
-        print('ELEVACION INICIAL')
-        print(elevacion_mesa_inicial)
-        print('ELEVACION FINAL')
-        print(elevacion_mesa_final)
+        print('DELTA')
+        print(delta)
 
-        # ajustar_MDs_url = ROOT + \
-        #     url_for('api.ajustar_MDs')
+        ajustar_MDs_url = ROOT + \
+            url_for('api.ajustar_MDs')
 
-        # response = requests.get(ajustar_MDs_url, params={"elev_mesa_0": elevacion_mesa_inicial,
-        #                                                  "elev_mesa_1": elevacion_mesa_final,
-        #                                                  "well_id":well_id
-        #                                                 }
-        #                         )
-        # num_registros_actualizados = json.loads(response.content.decode("utf-8"))['num_registros_afectados']
+        print(ajustar_MDs_url)
 
-        flash('Se actualizaron XX registros')
+        response = requests.get(ajustar_MDs_url, params={"delta": delta,
+                                                         "well_id":well_id
+                                                        }
+                                )
+        num_registros_actualizados = json.loads(response.content.decode("utf-8"))['num_registros_afectados']
+
+        flash(f'Se actualizaron {num_registros_actualizados} registros')
 
         return redirect(url_for('ajustar_md'))
 

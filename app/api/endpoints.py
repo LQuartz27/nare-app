@@ -49,13 +49,36 @@ def del_component_status(well_id):
     engine = create_engine(connection_url)
 
     BORRAR_COMP_STATUS_QUERY = get_borrado_component_status_query(well_id)
+    COMP_STATUS_COUNT_QUERY = get_compo_status_rows_query(well_id)
 
     with engine.connect() as connection:
-        cursor_result = connection.execute(text(BORRAR_COMP_STATUS_QUERY))
+        trans = connection.begin()
+        try:
+            cursor_conteo_result = connection.execute(text(COMP_STATUS_COUNT_QUERY))
+            count_data = cursor_conteo_result.fetchall()
+            row_count = count_data[0][0]
+            trans.commit()
+        except:
+            trans.rollback()
+            raise Exception('No se logró hacer el conteo de los registros de COMP STATUS')
 
-    registros_afectados = cursor_result.rowcount
+    print(f'ROW COUNT: {row_count}')
 
-    response = {"num_registros_afectados": registros_afectados}
+    engine = create_engine(connection_url)
+
+    with engine.connect() as connection:
+        trans = connection.begin()
+        try:
+            cursor_borrado_result = connection.execute(text(BORRAR_COMP_STATUS_QUERY))
+            useless_count = cursor_borrado_result.rowcount
+            trans.commit()
+        except:
+            trans.rollback()
+            raise Exception('No se logró eliminar los component status del pozo')
+
+    print(f'Useless DELETE count: {useless_count}')
+
+    response = {"num_registros_afectados": row_count}
 
     return jsonify(response)
 
@@ -65,13 +88,18 @@ def ajustar_MDs():
 
     engine = create_engine(connection_url)
 
-    elev_mesa_0 = request.args.get('elev_mesa_0', None)
-    elev_mesa_1 = request.args.get('elev_mesa_1', None)
+    delta = float(request.args.get('delta', None))
     well_id = request.args.get('well_id', None)
 
-    delta = elev_mesa_1 - elev_mesa_0
+    print(f'DELTA INSIDE API: {delta}')
+    print(f'WELL ID: {well_id}')
+
+    # delta = 10
 
     AJUSTE_MD_QUERY = get_ajuste_MDs_query(delta, well_id)
+    print('QUERY A EJECUTAR:')
+    print(AJUSTE_MD_QUERY)
+    print(text(AJUSTE_MD_QUERY))
 
     with engine.connect() as connection:
         cursor_result = connection.execute(text(AJUSTE_MD_QUERY))

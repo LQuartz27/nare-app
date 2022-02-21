@@ -39,8 +39,7 @@ class AjusteMDsForm(FlaskForm):
     nombrepozo = StringField('NOMBRE DEL POZO', validators=[
                              DataRequired()], id='well-name')
 
-    elevacion_mesa_inicial = StringField(
-        'ELEVACION MESA INICIAL', validators=[DataRequired()])
-    elevacion_mesa_final = StringField(
-        'ELEVACION MESA FINAL', validators=[DataRequired()])
+    delta = StringField(
+        'DELTA en MD', validators=[DataRequired()])
+    
     submit_btn = SubmitField('Ajustar MDs')

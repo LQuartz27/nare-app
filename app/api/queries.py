@@ -6,39 +6,47 @@ FROM CD_WELL
 
 def get_well_id_query(well_common_name):
 
-    WELL_ID_QUERY = """
+	WELL_ID_QUERY = """
 	SELECT well_id
 	FROM CD_WELL
 	WHERE well_common_name = '{}' -- NOMBRE DEL POZO
 	""".format(well_common_name)
 
-    return WELL_ID_QUERY
+	return WELL_ID_QUERY
 
 
 def get_borrado_component_status_query(well_id):
 
-    BORRADO_COMPONENT_STATUS_QUERY = """
+	BORRADO_COMPONENT_STATUS_QUERY = """
 			--Borra por pozo, Lineas del Status de los componentes WE
-	DELETE
+	DELETE FROM CD_ASSEMBLY_COMP_STATUS
+	WHERE well_id = '{}'
+	""".format(well_id)
+
+	return BORRADO_COMPONENT_STATUS_QUERY
+
+
+def get_compo_status_rows_query(well_id):
+	
+	QUERY = """
+	SELECT COUNT(*) AS NUM_REGISTROS
 	FROM CD_ASSEMBLY_COMP_STATUS
 	WHERE well_id = '{}'
 	""".format(well_id)
 
-    return BORRADO_COMPONENT_STATUS_QUERY
+	return QUERY
 
 
 def get_ajuste_MDs_query(delta, well_id):
     QUERY = """
 	UPDATE DM_ACTIVITY
 	SET
-	md_from = md_from+{},
-	md_to = md_to+{}
-
+	md_from = md_from+({}),
+	md_to = md_to+({})
 	WHERE well_id='{}'
 	""".format(delta, delta, well_id)
 
     return QUERY
-
 
 GET_TO_UPDATE_DATA_query = """
 Select 
