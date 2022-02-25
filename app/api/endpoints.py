@@ -1,9 +1,10 @@
 from urllib import response
-from flask import jsonify, request
+from flask import jsonify, request, url_for
 from itsdangerous import json
 from sqlalchemy import create_engine, text
 from . import api_blueprint
 from .queries import *
+import requests
 
 from app.database import *
 
@@ -31,10 +32,6 @@ def wellid(wellname):
         result_cursor = connection.execute(text(WELL_ID_QUERY))
         data = result_cursor.fetchall()
 
-    # print('QUERY RESULTS.')
-    # print(type(data))
-    # print(data)
-
     well_id = data[0][0]
 
     response = {'WELL COMMON NAME': wellname,
@@ -43,12 +40,11 @@ def wellid(wellname):
     return jsonify(response)
 
 
-@api_blueprint.route('/delcomponentstatus/<string:well_id>', methods=['GET'])
-def del_component_status(well_id):
+@api_blueprint.route('/componentStatusRows', methods=['GET'])
+def count_comp_status():
+    well_id = request.args.get('well_id', None)
 
     engine = create_engine(connection_url)
-
-    BORRAR_COMP_STATUS_QUERY = get_borrado_component_status_query(well_id)
     COMP_STATUS_COUNT_QUERY = get_compo_status_rows_query(well_id)
 
     with engine.connect() as connection:
@@ -64,21 +60,80 @@ def del_component_status(well_id):
 
     print(f'ROW COUNT: {row_count}')
 
+    response = {'COMPONENT STATUS ROWS': row_count}
+
+    # engine.dispose()
+
+    return jsonify(response)
+
+
+@api_blueprint.route('/delcomponentstatus/<string:well_id>', methods=['GET'])
+def del_component_status(well_id):
+
+    BORRAR_COMP_STATUS_QUERY = get_borrado_component_status_query(well_id)
+    
+    ROOT = request.url_root
+
+    get_comp_status_rows_url = ROOT + \
+            url_for('api.count_comp_status')
+
+    print(get_comp_status_rows_url)
+
+    response = requests.get(get_comp_status_rows_url, params={
+                                                        "well_id":well_id
+                                                    }
+                            )
+
+    row_count_prev = json.loads(response.content.decode("utf-8"))['COMPONENT STATUS ROWS']
+
+    print(BORRAR_COMP_STATUS_QUERY)
+    print(text(BORRAR_COMP_STATUS_QUERY))
+
     engine = create_engine(connection_url)
 
     with engine.connect() as connection:
         trans = connection.begin()
         try:
+            # cursor_borrado_result = connection.execute("DELETE FROM CD_ASSEMBLY_COMP_STATUS_T WITH (READPAST) WHERE well_id = 'su8xOlmBS3'")
             cursor_borrado_result = connection.execute(text(BORRAR_COMP_STATUS_QUERY))
-            useless_count = cursor_borrado_result.rowcount
+
             trans.commit()
+            # from sqlalchemy import Table, MetaData
+
+            # metadata_obj = MetaData()
+            # metadata_obj.reflect(connection)      
+
+            # # print(metadata_obj.tables)
+            # # print(metadata_obj.tables.keys())
+            # CD_ASSEMBLY_COMP_STATUS = metadata_obj.tables['CD_ASSEMBLY_COMP_STATUS_T']
+
+            # print(type(CD_ASSEMBLY_COMP_STATUS))
+            # print(CD_ASSEMBLY_COMP_STATUS)
+
+            # dele = CD_ASSEMBLY_COMP_STATUS.delete().where(CD_ASSEMBLY_COMP_STATUS.c.well_id == 'h9yJX1iFMu')
+            # print(dele)
+            # connection.execute(dele)
+            # cursor_borrado_result = connection.execute(text(BORRAR_COMP_STATUS_QUERY))
+            
+            # print(type(cursor_borrado_result))
+            # print(cursor_borrado_result)                                             
+            # useless_count = cursor_borrado_result.rowcount
         except:
             trans.rollback()
             raise Exception('No se logró eliminar los component status del pozo')
 
-    print(f'Useless DELETE count: {useless_count}')
+    # print(f'Useless DELETE count: {useless_count}')
+    # row_count = 1
 
-    response = {"num_registros_afectados": row_count}
+    response = requests.get(get_comp_status_rows_url, params={
+                                                        "well_id":well_id
+                                                    }
+                            )
+
+    row_count_after = json.loads(response.content.decode("utf-8"))['COMPONENT STATUS ROWS']
+
+    response = {"num_registros_antes": row_count_prev,
+                "num_registros_despues":row_count_after}
 
     return jsonify(response)
 

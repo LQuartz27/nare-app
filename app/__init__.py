@@ -57,15 +57,17 @@ def comp_status():
         print('NOMBRE DEL POZO')
         print(nombrepozo)
         print('WELL ID')
-        print(well_id)
+        print(f'|{well_id}|')
 
         del_comp_status_url = ROOT + \
             url_for('api.del_component_status', well_id=well_id)
 
         response = requests.get(del_comp_status_url)
-        num_registros_eliminados = json.loads(response.content.decode("utf-8"))['num_registros_afectados']
+        num_registros_antes = json.loads(response.content.decode("utf-8"))['num_registros_antes']
+        num_registros_despues = json.loads(response.content.decode("utf-8"))['num_registros_despues']
 
-        flash('Se eliminaron {} registros'.format(num_registros_eliminados))
+        flash('Antes: {} registros'.format(num_registros_antes))
+        flash('Despues: {} registros'.format(num_registros_despues))
 
         return redirect(url_for('comp_status'))
 

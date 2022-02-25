@@ -6,8 +6,8 @@ from app.api.queries import WELL_COMMON_NAMES_QUERY
 DBServer = 'SQLSERVER'
 DBName = 'EDM150'
 User = 'edmadmin'
-Password = r'EdmMansa#150'  # VpvBvuA/cWvqeuy3QVAvRxJQg5fdHB6oBC3beYYd2gg=
-Server = '10.232.88.31' # 10.11.24.150
+Password = r'EdmMansa#150'  #    EdmMansa23#   EdmMansa#150
+Server = '10.232.88.31' #   10.11.24.149 10.232.88.31
 Port = '1433'
 tnsName = ''
 ServiceName = ''
@@ -24,11 +24,10 @@ connection_url = URL.create(
     database=DBName,
     query={
         "driver": "ODBC Driver 17 for SQL Server",
-        #         "authentication": "ActiveDirectoryIntegrated",
     },
 )
 #engine = create_engine(connection_url)
-#print('Module database', connection_url)
+# print('Module database', connection_url)
 
 def get_well_common_names():
     engine = create_engine(connection_url)

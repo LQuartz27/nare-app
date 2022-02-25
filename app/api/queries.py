@@ -18,8 +18,8 @@ def get_well_id_query(well_common_name):
 def get_borrado_component_status_query(well_id):
 
 	BORRADO_COMPONENT_STATUS_QUERY = """
-			--Borra por pozo, Lineas del Status de los componentes WE
 	DELETE FROM CD_ASSEMBLY_COMP_STATUS
+	WITH (ROWLOCK, READPAST) --WITH (NOLOCK) (READPAST)
 	WHERE well_id = '{}'
 	""".format(well_id)
 
@@ -38,15 +38,23 @@ def get_compo_status_rows_query(well_id):
 
 
 def get_ajuste_MDs_query(delta, well_id):
-    QUERY = """
+    QUERY = f"""
 	UPDATE DM_ACTIVITY
 	SET
-	md_from = md_from+({}),
-	md_to = md_to+({})
-	WHERE well_id='{}'
-	""".format(delta, delta, well_id)
+	md_from = md_from+({delta}),
+	md_to = md_to+({delta})
+	WHERE well_id='{well_id}';
+
+	UPDATE DM_DAILY
+
+	SET md_current = md_current+({delta}),
+		progress = progress+({delta}) 
+
+	WHERE well_id = '{well_id}'
+	"""#.format(delta, delta, well_id)
 
     return QUERY
+
 
 GET_TO_UPDATE_DATA_query = """
 Select 
