@@ -43,3 +43,19 @@ class AjusteMDsForm(FlaskForm):
         'DELTA en MD', validators=[DataRequired()])
     
     submit_btn = SubmitField('Ajustar MDs')
+
+
+class AjusteProfEventosForm(FlaskForm):
+    nombrepozo = StringField('NOMBRE DEL POZO', validators=[
+                             DataRequired()], id='well-name')
+
+    td = StringField(
+        'Nueva TD [ft]', validators=[DataRequired()])
+    
+    submit_btn = SubmitField('Ajustar Profs Props Eventos')
+
+
+class PreprocesamientoDDRForm(FlaskForm):
+    nombrepozo = StringField('NOMBRE DEL POZO', validators=[
+                             DataRequired()], id='well-name')
+    submit_btn = SubmitField('Generar Excel')

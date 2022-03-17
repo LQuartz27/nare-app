@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block content %}
+
+{% for message in get_flashed_messages() %}
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+{% endfor %}
+
+<b>
+    <h3 class="card-title">Preprocesamiento <br>DDR</h3>
+</b>
+
+<br>
+<form action={{ url_for( 'preprocesamiento_ddr' ) }} method="post">
+    {{ form.hidden_tag() }}
+
+{#                     Nombre del pozo                               #}
+    <p>{{ form.nombrepozo.label(class="form-label") }}</p>
+    <div class="container">
+
+        <div class="row justify-content-center">
+            <div class="col-6 w-75">
+                {{ form.nombrepozo(class="form-control") }}
+                {% for error in form.nombrepozo.errors %}
+                {{ error }}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <br>
+
+{#                        Consultar Datos del Pozo  #}
+    <div class="d-grid gap-2 w-50 mx-auto">
+        {{ form.submit_btn(class="btn btn-danger", href="{{ url_for('home') }}") }}
+        <a class="btn btn-secondary" href={{ url_for( 'home' ) }}  role="button">VOLVER</a>
+    </div>
+</form>
+<br>
+
+{% endblock %}
+{% block aditionalScripts %}
+<script>
+    $(function() {
+        $.ajax({
+            url: '{{ url_for("api.well_names") }}'
+            }).done(function (data){
+                $('#well-name').autocomplete({
+                    source: data,
+                    minLength: 2
+                });
+            });
+        });
+</script>
+{% endblock %}

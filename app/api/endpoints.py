@@ -40,6 +40,29 @@ def wellid(wellname):
     return jsonify(response)
 
 
+@api_blueprint.route('/get_elevacion_mesa/<string:well_id>', methods=['GET'])
+def get_elevacion_mesa(well_id):
+
+    engine = create_engine(connection_url)
+
+    ELEVACION_MESA_QRY = get_elevaciones_query(well_id)
+
+    print(ELEVACION_MESA_QRY)
+
+    with engine.connect() as connection:
+        result_cursor = connection.execute(text(ELEVACION_MESA_QRY))
+        data = result_cursor.fetchall()
+
+    elevacion_mesa = data[0][0]
+    elevacion_terreno = data[0][1]
+
+    response = {'ELEVACION MESA': elevacion_mesa,
+                'ELEVACION TERRENO':elevacion_terreno,
+                'WELL ID': well_id}
+
+    return jsonify(response)
+
+
 @api_blueprint.route('/componentStatusRows', methods=['GET'])
 def count_comp_status():
     well_id = request.args.get('well_id', None)
@@ -61,8 +84,6 @@ def count_comp_status():
     print(f'ROW COUNT: {row_count}')
 
     response = {'COMPONENT STATUS ROWS': row_count}
-
-    # engine.dispose()
 
     return jsonify(response)
 
@@ -138,6 +159,42 @@ def del_component_status(well_id):
     return jsonify(response)
 
 
+@api_blueprint.route('/ajustarProfEventos/', methods=['GET'])
+def ajustar_profs_eventos():
+    engine = create_engine(connection_url)
+
+    new_td = float(request.args.get('td', None))
+    well_id = request.args.get('well_id', None)
+
+    ROOT = request.url_root
+
+    get_elevacion_mesa_url = ROOT + \
+            url_for('api.get_elevacion_mesa', well_id=well_id)
+
+    response = requests.get(get_elevacion_mesa_url)
+    elevacion_mesa = json.loads(response.content.decode("utf-8"))['ELEVACION MESA']
+    elevacion_terreno = json.loads(response.content.decode("utf-8"))['ELEVACION TERRENO']
+
+    AJUSTAR_PROFS_EVENTOS_PERFO = get_ajustar_profundidades_eventos_perfo_qry(new_td, elevacion_mesa , elevacion_terreno, well_id)
+    AJUSTAR_PROFS_EVENTOS_SUBSUELO = get_ajustar_profundidades_eventos_subsuelo_qry(new_td, elevacion_mesa , well_id)
+
+    with engine.connect() as connection:
+        cursor_result = connection.execute(text(AJUSTAR_PROFS_EVENTOS_PERFO))
+
+    registros_afectados_odr = cursor_result.rowcount
+
+    with engine.connect() as connection:
+        cursor_result = connection.execute(text(AJUSTAR_PROFS_EVENTOS_SUBSUELO))
+
+    registros_afectados_subsuelo = cursor_result.rowcount
+
+    registros_afectados = registros_afectados_odr + registros_afectados_subsuelo
+
+    response = {"num_registros_afectados": registros_afectados}
+
+    return jsonify(response)
+
+
 @api_blueprint.route('/ajustarMD')
 def ajustar_MDs():
 
@@ -149,8 +206,6 @@ def ajustar_MDs():
     print(f'DELTA INSIDE API: {delta}')
     print(f'WELL ID: {well_id}')
 
-    # delta = 10
-
     AJUSTE_MD_QUERY = get_ajuste_MDs_query(delta, well_id)
     print('QUERY A EJECUTAR:')
     print(AJUSTE_MD_QUERY)
@@ -160,7 +215,7 @@ def ajustar_MDs():
         cursor_result = connection.execute(text(AJUSTE_MD_QUERY))
 
     registros_afectados = cursor_result.rowcount
-
+    
     response = {"num_registros_afectados": registros_afectados}
 
     return jsonify(response)

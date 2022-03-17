@@ -37,7 +37,7 @@ def get_compo_status_rows_query(well_id):
 	return QUERY
 
 
-def get_ajuste_MDs_query(delta, well_id):
+def get_ajuste_MDs_query1(delta, well_id):
     QUERY = f"""
 	UPDATE DM_ACTIVITY
 	SET
@@ -51,8 +51,86 @@ def get_ajuste_MDs_query(delta, well_id):
 		progress = progress+({delta}) 
 
 	WHERE well_id = '{well_id}'
-	"""#.format(delta, delta, well_id)
+	"""
+    return QUERY
 
+
+def get_elevaciones_query(well_id):
+	QUERY = f"""
+	SELECT datum_elevation, water_depth
+	FROM CD_DATUM AS D INNER JOIN CD_WELL AS W
+		ON W.well_id = D.well_id
+	WHERE W.well_id = '{well_id}' AND is_default='Y';
+	"""
+	return QUERY
+
+
+def get_ajustar_profundidades_eventos_perfo_qry(view_prof, elev_mesa , elev_terreno, well_id):
+
+	prof_en_bbdd = view_prof - elev_mesa
+	air_gap = elev_mesa - elev_terreno 
+
+	QUERY = f"""
+	---PROPIEDADES DEL EVENTO
+
+    UPDATE DM_EVENT SET tvd_current = '{air_gap}' WHERE well_id = '{well_id}' AND event_col NOT IN ('ODR','REN','MOB');
+    UPDATE DM_EVENT SET tvd_plugback = '{prof_en_bbdd}' WHERE well_id = '{well_id}' AND event_col NOT IN ('ODR','REN','MOB');
+	"""
+	return QUERY
+
+
+def get_ajustar_profundidades_eventos_subsuelo_qry(view_prof, elev_mesa , well_id):
+
+	prof_en_bbdd = view_prof - elev_mesa
+
+	QUERY = f"""
+	---PROPIEDADES DEL EVENTO
+
+    UPDATE DM_EVENT SET tvd_current = '{prof_en_bbdd}' WHERE well_id = '{well_id}' AND event_col NOT IN ('ODR','REN','MOB');
+    UPDATE DM_EVENT SET tvd_plugback = '{prof_en_bbdd}' WHERE well_id = '{well_id}' AND event_col NOT IN ('ODR','REN','MOB');
+	"""
+	return QUERY
+
+
+def get_ajuste_MDs_query(delta, well_id):
+    QUERY = f"""
+	UPDATE CD_WELLBORE SET authorized_md = authorized_md + ({delta}) WHERE well_id = '{well_id}' AND authorized_md IS NOT NULL;
+	UPDATE CD_WELLBORE SET authorized_tvd = authorized_tvd + ({delta}) WHERE well_id = '{well_id}' AND authorized_tvd IS NOT NULL;
+
+	UPDATE DM_STIM_TREATMENT SET interval_base = interval_base + ({delta}) WHERE well_id = '{well_id}' AND interval_base IS NOT NULL;
+	UPDATE DM_STIM_TREATMENT SET interval_top = interval_top + ({delta}) WHERE well_id = '{well_id}' AND interval_top IS NOT NULL;
+
+	UPDATE DM_PIPE_RUN SET set_length_estimate = set_length_estimate + ({delta}) WHERE well_id = '{well_id}' AND set_length_estimate IS NOT NULL;
+	UPDATE DM_LOG_INTERVAL SET md_top = md_top + ({delta}) WHERE well_id = '{well_id}' AND md_top IS NOT NULL;
+	UPDATE DM_LOG_INTERVAL SET md_base = md_base + ({delta}) WHERE well_id = '{well_id}' AND md_base IS NOT NULL;
+
+	UPDATE DM_DAILY SET md_current = md_current + ({delta}) WHERE well_id = '{well_id}' AND md_current IS NOT NULL;
+	UPDATE DM_ACTIVITY SET md_from = md_from + ({delta}) WHERE well_id = '{well_id}' AND md_from IS NOT NULL;
+	UPDATE DM_ACTIVITY SET md_to = md_to + ({delta}) WHERE well_id = '{well_id}' AND md_to IS NOT NULL;
+
+	UPDATE CD_HOLE_SECT_GROUP SET md_hole_sect_base = md_hole_sect_base + ({delta}) WHERE well_id = '{well_id}' AND md_hole_sect_base IS NOT NULL;
+	UPDATE CD_HOLE_SECT_GROUP SET md_hole_sect_top = md_hole_sect_top + ({delta}) WHERE well_id = '{well_id}' AND md_hole_sect_top IS NOT NULL;
+	UPDATE CD_HOLE_SECT_GROUP SET tvd_hole_sect_base = tvd_hole_sect_base + ({delta}) WHERE well_id = '{well_id}' AND tvd_hole_sect_base IS NOT NULL;
+	UPDATE CD_HOLE_SECT_GROUP SET tvd_hole_sect_top = tvd_hole_sect_top + ({delta}) WHERE well_id = '{well_id}' AND tvd_hole_sect_top IS NOT NULL;
+	UPDATE CD_FLUID SET md_mud_sample = md_mud_sample + ({delta}) WHERE well_id = '{well_id}' AND md_mud_sample IS NOT NULL;
+	UPDATE CD_FLUID SET tvd_mud_sample = tvd_mud_sample + ({delta}) WHERE well_id = '{well_id}' AND tvd_mud_sample IS NOT NULL;
+
+	UPDATE DM_BHA_RUN SET md_in = md_in + ({delta}) WHERE well_id = '{well_id}' AND md_in IS NOT NULL;
+	UPDATE DM_BHA_RUN SET md_out = md_out + ({delta}) WHERE well_id = '{well_id}' AND md_out IS NOT NULL;
+
+	UPDATE CD_SURVEY_STATION SET md = md + ({delta}) WHERE well_id = '{well_id}' AND md IS NOT NULL;
+	UPDATE CD_SURVEY_STATION SET tvd = tvd + ({delta}) WHERE well_id = '{well_id}' AND tvd IS NOT NULL;
+	---CEMENT
+	UPDATE CD_CEMENT_JOB SET md_float = md_float + ({delta}) WHERE well_id = '{well_id}' AND md_float IS NOT NULL;
+	UPDATE CD_CEMENT_JOB SET tvd_float = tvd_float + ({delta}) WHERE well_id = '{well_id}' AND tvd_float IS NOT NULL;
+
+	UPDATE CD_CEMENT_FLUID SET slurry_top_tvd = slurry_top_tvd + ({delta}) WHERE well_id = '{well_id}' AND slurry_top_tvd IS NOT NULL;
+	UPDATE CD_CEMENT_FLUID SET slurry_base_tvd = slurry_base_tvd + ({delta}) WHERE well_id = '{well_id}' AND slurry_base_tvd IS NOT NULL;
+
+	UPDATE CD_CEMENT_STAGE SET md_top = md_top + ({delta}) WHERE well_id = '{well_id}' AND md_top IS NOT NULL;
+	UPDATE CD_CEMENT_STAGE SET tvd_top = tvd_top + ({delta}) WHERE well_id = '{well_id}' AND tvd_top IS NOT NULL;
+	UPDATE CD_CEMENT_STAGE SET md_base = md_base + ({delta}) WHERE well_id = '{well_id}' AND md_base IS NOT NULL;
+	"""
     return QUERY
 
 

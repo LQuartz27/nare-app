@@ -15,13 +15,9 @@ from app.forms import *
 # template_dir = os.path.join(template_dir, 'templates')
 # print(template_dir)
 
-app = Flask(__name__)  # , template_folder=template_dir)
+app = Flask(__name__) 
 app.config['SECRET_KEY'] = 'PyTmKoIeRfD67.2VbQ'
 app.register_blueprint(api_blueprint)
-
-# print(connection_url)
-# print(engine)
-
 
 @app.route('/')
 def hello_world():  # put application's code here
@@ -119,6 +115,92 @@ def ajustar_md():
         return redirect(url_for('ajustar_md'))
 
     return render_template('ajuste_md.html', **context)
+
+
+@app.route('/ajusteProfEventos', methods=['GET', 'POST'])
+def ajuste_prof_eventos():
+
+    ROOT = request.url_root
+
+    form = AjusteProfEventosForm()
+
+    context = {
+        'form': form,
+    }
+
+    if form.validate_on_submit():
+        nombrepozo = form.nombrepozo.data
+        new_td = form.td.data
+
+        get_well_id_url = ROOT + url_for('api.wellid', wellname=nombrepozo)
+
+        response = requests.get(get_well_id_url)
+        data = json.loads(response.content.decode("utf-8"))
+        well_id = data['WELL ID']
+
+        print('NOMBRE DEL POZO')
+        print(nombrepozo)
+        print('WELL ID')
+        print(well_id)
+        print('NUEVA TD')
+        print(new_td)
+
+        ajustar_profs_eventos_url = ROOT + \
+            url_for('api.ajustar_profs_eventos')
+
+        print(ajustar_profs_eventos_url)
+
+        response = requests.get(ajustar_profs_eventos_url, params={"new_td": new_td,
+                                                         "well_id":well_id
+                                                        }
+                                )
+        num_registros_actualizados = json.loads(response.content.decode("utf-8"))['num_registros_afectados']
+
+        flash(f'Se actualizaron {num_registros_actualizados} registros')
+
+        return redirect(url_for('ajuste_prof_eventos'))
+
+    return render_template('ajuste_prof_eventos.html', **context)
+
+
+@app.route('/preprocesamientoDDR', methods=['GET', 'POST'])
+def preprocesamiento_ddr():
+
+    ROOT = request.url_root
+
+    form = PreprocesamientoDDRForm()
+
+    context = {
+        'form': form,
+    }
+
+    if form.validate_on_submit():
+        nombrepozo = form.nombrepozo.data
+
+        get_well_id_url = ROOT + url_for('api.wellid', wellname=nombrepozo)
+
+        response = requests.get(get_well_id_url)
+        data = json.loads(response.content.decode("utf-8"))
+        well_id = data['WELL ID']
+
+        print('NOMBRE DEL POZO')
+        print(nombrepozo)
+        print('WELL ID')
+        print(f'|{well_id}|')
+
+        del_comp_status_url = ROOT + \
+            url_for('api.del_component_status', well_id=well_id)
+
+        response = requests.get(del_comp_status_url)
+        num_registros_antes = json.loads(response.content.decode("utf-8"))['num_registros_antes']
+        num_registros_despues = json.loads(response.content.decode("utf-8"))['num_registros_despues']
+
+        flash('Antes: {} registros'.format(num_registros_antes))
+        flash('Despues: {} registros'.format(num_registros_despues))
+
+        return redirect(url_for('preprocesamiento_ddr'))
+
+    return render_template('preprocesamiento_ddr.html', **context)
 
 
 @app.route('/preactualizacion', methods=['GET', 'POST'])
