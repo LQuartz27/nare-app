@@ -4,6 +4,7 @@ from itsdangerous import json
 from sqlalchemy import create_engine, text
 from . import api_blueprint
 from .queries import *
+# from .preprocesado_ddr import *
 import requests
 
 from app.database import *
@@ -163,7 +164,7 @@ def del_component_status(well_id):
 def ajustar_profs_eventos():
     engine = create_engine(connection_url)
 
-    new_td = float(request.args.get('td', None))
+    new_td = float(request.args.get('new_td', None))
     well_id = request.args.get('well_id', None)
 
     ROOT = request.url_root
@@ -177,18 +178,21 @@ def ajustar_profs_eventos():
 
     AJUSTAR_PROFS_EVENTOS_PERFO = get_ajustar_profundidades_eventos_perfo_qry(new_td, elevacion_mesa , elevacion_terreno, well_id)
     AJUSTAR_PROFS_EVENTOS_SUBSUELO = get_ajustar_profundidades_eventos_subsuelo_qry(new_td, elevacion_mesa , well_id)
+    
+    perfo_queries = AJUSTAR_PROFS_EVENTOS_PERFO.replace('\t','').split(';\n')
+    subsuelo_queries = AJUSTAR_PROFS_EVENTOS_SUBSUELO.replace('\t','').split(';\n')
+    
+    all_queries = perfo_queries + subsuelo_queries
+
+    registros_afectados = 0
 
     with engine.connect() as connection:
-        cursor_result = connection.execute(text(AJUSTAR_PROFS_EVENTOS_PERFO))
+        for query in all_queries:
+            if query:
+                cursor_result = connection.execute(text(query))
+                registros_afectados += cursor_result.rowcount
 
-    registros_afectados_odr = cursor_result.rowcount
-
-    with engine.connect() as connection:
-        cursor_result = connection.execute(text(AJUSTAR_PROFS_EVENTOS_SUBSUELO))
-
-    registros_afectados_subsuelo = cursor_result.rowcount
-
-    registros_afectados = registros_afectados_odr + registros_afectados_subsuelo
+    print('registros_afectados', registros_afectados)
 
     response = {"num_registros_afectados": registros_afectados}
 
@@ -207,15 +211,31 @@ def ajustar_MDs():
     print(f'WELL ID: {well_id}')
 
     AJUSTE_MD_QUERY = get_ajuste_MDs_query(delta, well_id)
-    print('QUERY A EJECUTAR:')
-    print(AJUSTE_MD_QUERY)
-    print(text(AJUSTE_MD_QUERY))
+
+    all_queries = AJUSTE_MD_QUERY.split(';\n')
+
+    registros_afectados = 0
 
     with engine.connect() as connection:
-        cursor_result = connection.execute(text(AJUSTE_MD_QUERY))
-
-    registros_afectados = cursor_result.rowcount
+        for query in all_queries:
+            print(query)
+            print()
+            cursor_result = connection.execute(text(query))
+            registros_afectados += cursor_result.rowcount
     
     response = {"num_registros_afectados": registros_afectados}
 
     return jsonify(response)
+
+
+@api_blueprint.route('/preprocesar_ddr/<string:wellname>', methods=['GET'])
+def preprocesar_ddr(wellname):
+    
+    engine = create_engine(connection_url)
+    
+    TIME_SUMMARY_QRY = get_perfo_time_summary_qry(wellname)
+    
+    # filepath = crear_excel_actividades_segmentadas(engine, text(TIME_SUMMARY_QRY), wellname)
+    
+    
+    

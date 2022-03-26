@@ -1,6 +1,5 @@
 import json
 import requests
-from sqlalchemy import create_engine, text
 from flask import Flask, flash, redirect, render_template, request, url_for
 
 from app.api import *
@@ -188,10 +187,10 @@ def preprocesamiento_ddr():
         print('WELL ID')
         print(f'|{well_id}|')
 
-        del_comp_status_url = ROOT + \
-            url_for('api.del_component_status', well_id=well_id)
+        preprocesar_ddr_url = ROOT + \
+            url_for('api.preprocesar_ddr', wellname=nombrepozo)
 
-        response = requests.get(del_comp_status_url)
+        response = requests.get(preprocesar_ddr_url)
         num_registros_antes = json.loads(response.content.decode("utf-8"))['num_registros_antes']
         num_registros_despues = json.loads(response.content.decode("utf-8"))['num_registros_despues']
 
