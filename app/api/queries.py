@@ -117,7 +117,7 @@ def get_ajuste_MDs_query(delta, well_id):
 
 	UPDATE CD_SURVEY_STATION SET md = md + ({delta}) WHERE well_id = '{well_id}' AND md IS NOT NULL;
 	UPDATE CD_SURVEY_STATION SET tvd = tvd + ({delta}) WHERE well_id = '{well_id}' AND tvd IS NOT NULL;
-	---CEMENT
+	
 	UPDATE CD_CEMENT_JOB SET md_float = md_float + ({delta}) WHERE well_id = '{well_id}' AND md_float IS NOT NULL;
 	UPDATE CD_CEMENT_JOB SET tvd_float = tvd_float + ({delta}) WHERE well_id = '{well_id}' AND tvd_float IS NOT NULL;
 
@@ -127,6 +127,17 @@ def get_ajuste_MDs_query(delta, well_id):
 	UPDATE CD_CEMENT_STAGE SET md_top = md_top + ({delta}) WHERE well_id = '{well_id}' AND md_top IS NOT NULL;
 	UPDATE CD_CEMENT_STAGE SET tvd_top = tvd_top + ({delta}) WHERE well_id = '{well_id}' AND tvd_top IS NOT NULL;
 	UPDATE CD_CEMENT_STAGE SET md_base = md_base + ({delta}) WHERE well_id = '{well_id}' AND md_base IS NOT NULL;
+ 
+	UPDATE CD_ASSEMBLY SET
+	md_assembly_base = md_assembly_base + ({delta})
+	WHERE well_id = '{well_id}' AND
+	md_assembly_base IS NOT NULL AND
+	CD_ASSEMBLY.event_id IN (SELECT event_id FROM DM_EVENT WHERE well_id='{well_id}' AND DM_EVENT.event_code IN ('ODR','REN'));
+
+	UPDATE CD_ASSEMBLY SET md_assembly_top = md_assembly_top + ({delta})
+	WHERE well_id = '{well_id}' AND
+	md_assembly_top IS NOT NULL  AND
+	CD_ASSEMBLY.event_id IN (SELECT event_id FROM DM_EVENT WHERE well_id='{well_id}' AND DM_EVENT.event_code IN ('ODR','REN'));
 	"""
     return QUERY
 
@@ -165,3 +176,13 @@ def get_perfo_time_summary_qry(wellname):
          1 ASC, 3 ASC, 6 ASC
     """
     return ODR_REN_TIME_SUMMARY_QUERY
+
+
+def get_asignar_P_qry(well_id):
+    QRY=f"""
+    UPDATE DM_ACTIVITY SET
+	DM_ACTIVITY.activity_class='P'
+	WHERE DM_ACTIVITY.activity_class IS NULL AND 
+          DM_ACTIVITY.well_id='{well_id}'
+    """
+    return QRY
