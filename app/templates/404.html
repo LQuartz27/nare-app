@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+
+
+<b>
+    <h3 class="card-title">Ocurrió un Error :(</h3>
+</b>
+
+<br>
+
+<img
+    src="{{ url_for('static', filename='images/404.jpg') }}"
+    class="card-img-bottom align-self-center"
+    alt="404 ERROR IMAGE"
+    />
+<br>
+
+{% endblock %}

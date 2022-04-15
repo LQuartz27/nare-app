@@ -15,5 +15,5 @@ $env:FLASK_DEBUG=1
 # CREANDO LA IMAGEN
 docker build -t nare-app-img .
 
-# CREANDO UN CONTENEDOR CORRIENDO LA APP
+# CREANDO UN CONTENEDOR CORRIENDO LA APP DURANTE EL DESARROLLO
 docker run -d --name nare-app-container -v ${PWD}:/nare-app/ -p 81:80 nare-app-img

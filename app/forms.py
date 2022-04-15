@@ -59,3 +59,9 @@ class PreprocesamientoDDRForm(FlaskForm):
     nombrepozo = StringField('NOMBRE DEL POZO', validators=[
                              DataRequired()], id='well-name')
     submit_btn = SubmitField('Generar Excel')
+    
+
+class AisgnarFasesForm(FlaskForm):
+    nombrepozo = StringField('NOMBRE DEL POZO', validators=[
+                             DataRequired()], id='well-name')
+    submit_btn = SubmitField('ASIGNAR FASES')
