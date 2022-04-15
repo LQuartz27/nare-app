@@ -312,18 +312,3 @@ def ajustar_MDs():
     response = {"num_registros_afectados": registros_afectados}
 
     return jsonify(response)
-
-
-@api_blueprint.route('/preprocesar_ddr/<string:wellname>', methods=['GET'])
-def preprocesar_ddr(wellname):
-    
-    engine = create_engine(connection_url)
-    
-    TIME_SUMMARY_QRY = get_perfo_time_summary_qry(wellname)
-    
-    uniquefilenamepath, filename = crear_excel_actividades_segmentadas(engine, text(TIME_SUMMARY_QRY), wellname)
-
-    return send_file(uniquefilenamepath, attachment_filename=filename)
-    
-    
-    

@@ -1,8 +1,10 @@
 import json
 import requests
-from flask import Flask, flash, redirect, render_template, request, url_for
+from flask import (Flask, flash, redirect, render_template,
+                   request, url_for, Response, send_file)
 
 from app.api import *
+from app.api.preprocesado_ddr import *
 from app.database import *
 from app.api.queries import *
 
@@ -322,28 +324,13 @@ def preprocesar_ddr():
     if form.validate_on_submit():
         nombrepozo = form.nombrepozo.data
 
-        get_well_id_url = ROOT + url_for('api.wellid', wellname=nombrepozo)
+        engine = create_engine(connection_url)
+    
+        TIME_SUMMARY_QRY = get_perfo_time_summary_qry(nombrepozo)
+        
+        output, filename = crear_excel_actividades_segmentadas(engine, text(TIME_SUMMARY_QRY), nombrepozo)
 
-        response = requests.get(get_well_id_url)
-        data = json.loads(response.content.decode("utf-8"))
-        well_id = data['WELL ID']
-
-        print('NOMBRE DEL POZO')
-        print(nombrepozo)
-        print('WELL ID')
-        print(f'|{well_id}|')
-
-        preprocesar_ddr_url = ROOT + \
-            url_for('api.preprocesar_ddr', wellname=nombrepozo)
-
-        response = requests.get(preprocesar_ddr_url)
-        num_registros_antes = json.loads(response.content.decode("utf-8"))['num_registros_antes']
-        num_registros_despues = json.loads(response.content.decode("utf-8"))['num_registros_despues']
-
-        flash('Antes: {} registros'.format(num_registros_antes))
-        flash('Despues: {} registros'.format(num_registros_despues))
-
-        return redirect(url_for('preprocesamiento_ddr'))
+        return send_file(output, as_attachment=True, attachment_filename=filename)
 
     return render_template('preprocesamiento_ddr.html', **context)
 

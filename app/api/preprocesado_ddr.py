@@ -1,13 +1,12 @@
 from datetime import datetime
-from fileinput import filename
 import os
 import pandas as pd
 import re
-import sys
-import shutil
+import io
 
 
-files_folder = os.path.join(os.getcwd(), 'static', 'xlfiles')
+
+files_folder = os.path.join(os.getcwd(), 'app','static', 'xlfiles')
 if not os.path.exists(files_folder):
     os.mkdir(files_folder)
 
@@ -106,9 +105,11 @@ def crear_excel_actividades_segmentadas(engine_edm, TIME_SUMMARY_QRY, wellname):
     
     uniquefilename= f"{wellname}_{str(time_str).replace('.','')}.xlsx"
     filename = f"{wellname}.xlsx"
-    
-    writer = pd.ExcelWriter(uniquefilename, engine='xlsxwriter')
+    uniquefilenamepath = os.path.join(files_folder,uniquefilename)
 
+    output = io.BytesIO()
+    # writer = pd.ExcelWriter(uniquefilename, engine='xlsxwriter')
+    writer = pd.ExcelWriter(output, engine='xlsxwriter')
 
     # meetings_df.to_excel(writer, sheet_name='MEETINGS', index=False)
     drilling_df.to_excel(writer, sheet_name='DRILLING', index=False)
@@ -140,10 +141,8 @@ def crear_excel_actividades_segmentadas(engine_edm, TIME_SUMMARY_QRY, wellname):
         worksheet.set_column(8,9, width=normal_width, cell_format=no_descript_format)
 
     writer.save()
-    writer.close()
+    output.seek(0)
+    # writer.close()
     
-    
-    
-    uniquefilenamepath = os.path.join(files_folder,uniquefilename)
+    return output, filename
 
-    return uniquefilenamepath, filename
