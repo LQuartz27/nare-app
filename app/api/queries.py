@@ -89,6 +89,29 @@ def get_ajustar_profundidades_eventos_subsuelo_qry(view_prof, elev_mesa , well_i
 	return QUERY
 
 
+def get_ajuste_MDs_current_query(delta, well_id):
+    QUERY = f"""
+	UPDATE DM_DAILY SET md_current = md_current + ({delta}) WHERE well_id = '{well_id}' AND md_current IS NOT NULL;
+	"""
+    return QUERY
+
+
+def get_ajuste_MDs_from_to_query(delta, well_id):
+    QUERY = f"""
+	UPDATE DM_ACTIVITY SET md_from = md_from + ({delta}) WHERE well_id = '{well_id}' AND md_from IS NOT NULL;
+	UPDATE DM_ACTIVITY SET md_to = md_to + ({delta}) WHERE well_id = '{well_id}' AND md_to IS NOT NULL;
+	"""
+    return QUERY
+
+
+def get_ajuste_MDs_survey_query(delta, well_id):
+    QUERY = f"""
+	UPDATE CD_SURVEY_STATION SET md = md + ({delta}) WHERE well_id = '{well_id}' AND md IS NOT NULL;
+	UPDATE CD_SURVEY_STATION SET tvd = tvd + ({delta}) WHERE well_id = '{well_id}' AND tvd IS NOT NULL;
+	"""
+    return QUERY
+
+
 def get_ajuste_MDs_query(delta, well_id):
     QUERY = f"""
 	UPDATE CD_WELLBORE SET authorized_md = authorized_md + ({delta}) WHERE well_id = '{well_id}' AND authorized_md IS NOT NULL;
@@ -117,7 +140,7 @@ def get_ajuste_MDs_query(delta, well_id):
 
 	UPDATE CD_SURVEY_STATION SET md = md + ({delta}) WHERE well_id = '{well_id}' AND md IS NOT NULL;
 	UPDATE CD_SURVEY_STATION SET tvd = tvd + ({delta}) WHERE well_id = '{well_id}' AND tvd IS NOT NULL;
-	---CEMENT
+	
 	UPDATE CD_CEMENT_JOB SET md_float = md_float + ({delta}) WHERE well_id = '{well_id}' AND md_float IS NOT NULL;
 	UPDATE CD_CEMENT_JOB SET tvd_float = tvd_float + ({delta}) WHERE well_id = '{well_id}' AND tvd_float IS NOT NULL;
 

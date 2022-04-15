@@ -1,10 +1,9 @@
-from urllib import response
-from flask import jsonify, request, url_for
+from flask import jsonify, request, url_for, send_file
 from itsdangerous import json
 from sqlalchemy import create_engine, text
 from . import api_blueprint
 from .queries import *
-# from .preprocesado_ddr import *
+from .preprocesado_ddr import *
 import requests
 
 from app.database import *
@@ -199,6 +198,93 @@ def ajustar_profs_eventos():
     return jsonify(response)
 
 
+@api_blueprint.route('/ajustarMDCurrent')
+def ajustar_MDs_current():
+
+    engine = create_engine(connection_url)
+
+    delta = float(request.args.get('delta', None))
+    well_id = request.args.get('well_id', None)
+
+    print(f'DELTA INSIDE API: {delta}')
+    print(f'WELL ID: {well_id}')
+
+    AJUSTE_MD_QUERY = get_ajuste_MDs_current_query(delta, well_id)
+
+    all_queries = AJUSTE_MD_QUERY.split(';\n')
+
+    registros_afectados = 0
+
+    with engine.connect() as connection:
+        for query in all_queries:
+            print(query)
+            print()
+            cursor_result = connection.execute(text(query))
+            registros_afectados += cursor_result.rowcount
+    
+    response = {"num_registros_afectados": registros_afectados}
+
+    return jsonify(response)
+
+
+@api_blueprint.route('/ajustarMDFromTo')
+def ajustar_MDs_from_to():
+
+    engine = create_engine(connection_url)
+
+    delta = float(request.args.get('delta', None))
+    well_id = request.args.get('well_id', None)
+
+    print(f'DELTA INSIDE API: {delta}')
+    print(f'WELL ID: {well_id}')
+
+    AJUSTE_MD_QUERY = get_ajuste_MDs_from_to_query(delta, well_id)
+
+    all_queries = AJUSTE_MD_QUERY.split(';\n')
+
+    registros_afectados = 0
+
+    with engine.connect() as connection:
+        for query in all_queries:
+            print(query)
+            print()
+            cursor_result = connection.execute(text(query))
+            registros_afectados += cursor_result.rowcount
+    
+    response = {"num_registros_afectados": registros_afectados}
+
+    return jsonify(response)
+
+
+@api_blueprint.route('/ajustarMDSurvey')
+def ajustar_MDs_survey():
+
+    engine = create_engine(connection_url)
+
+    delta = float(request.args.get('delta', None))
+    well_id = request.args.get('well_id', None)
+
+    print(f'DELTA INSIDE API: {delta}')
+    print(f'WELL ID: {well_id}')
+
+    AJUSTE_MD_QUERY = get_ajuste_MDs_survey_query(delta, well_id)
+
+    all_queries = AJUSTE_MD_QUERY.split(';\n')
+
+    registros_afectados = 0
+
+    with engine.connect() as connection:
+        for query in all_queries:
+            print(query)
+            print()
+            cursor_result = connection.execute(text(query))
+            registros_afectados += cursor_result.rowcount
+    
+    response = {"num_registros_afectados": registros_afectados}
+
+    return jsonify(response)
+
+
 @api_blueprint.route('/ajustarMD')
 def ajustar_MDs():
 
@@ -235,7 +321,9 @@ def preprocesar_ddr(wellname):
     
     TIME_SUMMARY_QRY = get_perfo_time_summary_qry(wellname)
     
-    # filepath = crear_excel_actividades_segmentadas(engine, text(TIME_SUMMARY_QRY), wellname)
+    uniquefilenamepath, filename = crear_excel_actividades_segmentadas(engine, text(TIME_SUMMARY_QRY), wellname)
+
+    return send_file(uniquefilenamepath, attachment_filename=filename)
     
     
     

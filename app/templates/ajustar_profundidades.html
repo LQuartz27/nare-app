@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block content %}
+                        <h3 class="card-title">Proyecto NARE</h3>
+                        <br>
+                        <h4 class="card-text">Ajuste de Profundidades</h5>
+                        <br>
+                        <div class="d-grid gap-2 w-50 mx-auto">
+                          <a class="btn btn-dark" href={{ url_for( 'ajustar_prof_eventos' ) }}  role="button">AJUSTE TD EN PROPS EVENTOS</a>
+                          <a class="btn btn-dark" href={{ url_for( 'ajustar_md_current' ) }}  role="button">AJUSTE MD CURRENT</a>
+                          <a class="btn btn-dark" href={{ url_for( 'ajustar_md_from_to' ) }}  role="button">AJUSTE MD FROM / MD TO</a>
+                          <a class="btn btn-dark" href={{ url_for( 'ajustar_md_survey' ) }}  role="button">AJUSTE MD EN SURVEYS</a>
+                          <a class="btn btn-dark" href={{ url_for( 'ajustar_md' ) }}  role="button">AJUSTE ENTERO DE MDs</a>
+                          <div class="d-grid gap-2 w-50 mx-auto">
+                            <a class="btn btn-secondary" href={{ url_for( 'home' ) }}  role="button">VOLVER</a>
+                          </div>
+                        <br>
+                        </div>
+{% endblock %}

@@ -28,13 +28,17 @@ def home():
     return render_template('home.html')
 
 
-@app.route('/deleteCompStatus', methods=['GET', 'POST'])
-def comp_status():
+@app.route('/ajustarProfundidades', methods=['GET', 'POST'])
+def ajustar_profundidades():
+    return render_template('ajustar_profundidades.html')
+
+
+@app.route('/ajusteTDEventos', methods=['GET', 'POST'])
+def ajustar_prof_eventos():
 
     ROOT = request.url_root
-    # print('REQUEST ROOT: {}'.format(ROOT))
 
-    form = ProcesoMasivoPozoEspecificoForm()
+    form = AjusteProfEventosForm()
 
     context = {
         'form': form,
@@ -42,6 +46,7 @@ def comp_status():
 
     if form.validate_on_submit():
         nombrepozo = form.nombrepozo.data
+        new_td = form.td.data
 
         get_well_id_url = ROOT + url_for('api.wellid', wellname=nombrepozo)
 
@@ -52,21 +57,167 @@ def comp_status():
         print('NOMBRE DEL POZO')
         print(nombrepozo)
         print('WELL ID')
-        print(f'|{well_id}|')
+        print(well_id)
+        print('NUEVA TD')
+        print(new_td)
 
-        del_comp_status_url = ROOT + \
-            url_for('api.del_component_status', well_id=well_id)
+        ajustar_profs_eventos_url = ROOT + \
+            url_for('api.ajustar_profs_eventos')
 
-        response = requests.get(del_comp_status_url)
-        num_registros_antes = json.loads(response.content.decode("utf-8"))['num_registros_antes']
-        num_registros_despues = json.loads(response.content.decode("utf-8"))['num_registros_despues']
+        print(ajustar_profs_eventos_url)
 
-        flash('Antes: {} registros'.format(num_registros_antes))
-        flash('Despues: {} registros'.format(num_registros_despues))
+        response = requests.get(ajustar_profs_eventos_url, params={"new_td": new_td,
+                                                         "well_id":well_id
+                                                        }
+                                )
+        num_registros_actualizados = json.loads(response.content.decode("utf-8"))['num_registros_afectados']
 
-        return redirect(url_for('comp_status'))
+        flash(f'Se actualizaron {num_registros_actualizados} registros')
 
-    return render_template('component_status.html', **context)
+        return redirect(url_for('ajuste_prof_eventos'))
+
+    return render_template('ajuste_prof_eventos.html', **context)
+
+
+@app.route('/ajusteMDsCurrent', methods=['GET', 'POST'])
+def ajustar_md_current():
+
+    ROOT = request.url_root
+    # print('REQUEST ROOT: {}'.format(ROOT))
+
+    form = AjusteMDsForm()
+
+    context = {
+        'form': form,
+    }
+
+    if form.validate_on_submit():
+        nombrepozo = form.nombrepozo.data
+        delta = form.delta.data
+
+        get_well_id_url = ROOT + url_for('api.wellid', wellname=nombrepozo)
+
+        response = requests.get(get_well_id_url)
+        data = json.loads(response.content.decode("utf-8"))
+        well_id = data['WELL ID']
+
+        print('NOMBRE DEL POZO')
+        print(nombrepozo)
+        print('WELL ID')
+        print(well_id)
+        print('DELTA')
+        print(delta)
+
+        ajustar_MDs_url = ROOT + \
+            url_for('api.ajustar_MDs_current')
+
+        print(ajustar_MDs_url)
+
+        response = requests.get(ajustar_MDs_url, params={"delta": delta,
+                                                         "well_id":well_id
+                                                        }
+                                )
+        num_registros_actualizados = json.loads(response.content.decode("utf-8"))['num_registros_afectados']
+
+        flash(f'Se actualizaron {num_registros_actualizados} registros')
+
+        return redirect(url_for('ajustar_md_current'))
+
+    return render_template('ajustar_md_current.html', **context)
+
+
+@app.route('/ajusteMDsFromTo', methods=['GET', 'POST'])
+def ajustar_md_from_to():
+
+    ROOT = request.url_root
+    # print('REQUEST ROOT: {}'.format(ROOT))
+
+    form = AjusteMDsForm()
+
+    context = {
+        'form': form,
+    }
+
+    if form.validate_on_submit():
+        nombrepozo = form.nombrepozo.data
+        delta = form.delta.data
+
+        get_well_id_url = ROOT + url_for('api.wellid', wellname=nombrepozo)
+
+        response = requests.get(get_well_id_url)
+        data = json.loads(response.content.decode("utf-8"))
+        well_id = data['WELL ID']
+
+        print('NOMBRE DEL POZO')
+        print(nombrepozo)
+        print('WELL ID')
+        print(well_id)
+        print('DELTA')
+        print(delta)
+
+        ajustar_MDs_url = ROOT + \
+            url_for('api.ajustar_MDs_from_to')
+
+        print(ajustar_MDs_url)
+
+        response = requests.get(ajustar_MDs_url, params={"delta": delta,
+                                                         "well_id":well_id
+                                                        }
+                                )
+        num_registros_actualizados = json.loads(response.content.decode("utf-8"))['num_registros_afectados']
+
+        flash(f'Se actualizaron {num_registros_actualizados} registros')
+
+        return redirect(url_for('ajustar_md_from_to'))
+
+    return render_template('ajustar_md_from_to.html', **context)
+
+
+@app.route('/ajusteMDsSurvey', methods=['GET', 'POST'])
+def ajustar_md_survey():
+
+    ROOT = request.url_root
+    # print('REQUEST ROOT: {}'.format(ROOT))
+
+    form = AjusteMDsForm()
+
+    context = {
+        'form': form,
+    }
+
+    if form.validate_on_submit():
+        nombrepozo = form.nombrepozo.data
+        delta = form.delta.data
+
+        get_well_id_url = ROOT + url_for('api.wellid', wellname=nombrepozo)
+
+        response = requests.get(get_well_id_url)
+        data = json.loads(response.content.decode("utf-8"))
+        well_id = data['WELL ID']
+
+        print('NOMBRE DEL POZO')
+        print(nombrepozo)
+        print('WELL ID')
+        print(well_id)
+        print('DELTA')
+        print(delta)
+
+        ajustar_MDs_url = ROOT + \
+            url_for('api.ajustar_MDs_survey')
+
+        print(ajustar_MDs_url)
+
+        response = requests.get(ajustar_MDs_url, params={"delta": delta,
+                                                         "well_id":well_id
+                                                        }
+                                )
+        num_registros_actualizados = json.loads(response.content.decode("utf-8"))['num_registros_afectados']
+
+        flash(f'Se actualizaron {num_registros_actualizados} registros')
+
+        return redirect(url_for('ajustar_md_survey'))
+
+    return render_template('ajustar_md_survey.html', **context)
 
 
 @app.route('/ajusteMDs', methods=['GET', 'POST'])
@@ -116,12 +267,13 @@ def ajustar_md():
     return render_template('ajuste_md.html', **context)
 
 
-@app.route('/ajusteProfEventos', methods=['GET', 'POST'])
-def ajuste_prof_eventos():
+@app.route('/deleteCompStatus', methods=['GET', 'POST'])
+def comp_status():
 
     ROOT = request.url_root
+    # print('REQUEST ROOT: {}'.format(ROOT))
 
-    form = AjusteProfEventosForm()
+    form = ProcesoMasivoPozoEspecificoForm()
 
     context = {
         'form': form,
@@ -129,7 +281,6 @@ def ajuste_prof_eventos():
 
     if form.validate_on_submit():
         nombrepozo = form.nombrepozo.data
-        new_td = form.td.data
 
         get_well_id_url = ROOT + url_for('api.wellid', wellname=nombrepozo)
 
@@ -140,30 +291,25 @@ def ajuste_prof_eventos():
         print('NOMBRE DEL POZO')
         print(nombrepozo)
         print('WELL ID')
-        print(well_id)
-        print('NUEVA TD')
-        print(new_td)
+        print(f'|{well_id}|')
 
-        ajustar_profs_eventos_url = ROOT + \
-            url_for('api.ajustar_profs_eventos')
+        del_comp_status_url = ROOT + \
+            url_for('api.del_component_status', well_id=well_id)
 
-        print(ajustar_profs_eventos_url)
+        response = requests.get(del_comp_status_url)
+        num_registros_antes = json.loads(response.content.decode("utf-8"))['num_registros_antes']
+        num_registros_despues = json.loads(response.content.decode("utf-8"))['num_registros_despues']
 
-        response = requests.get(ajustar_profs_eventos_url, params={"new_td": new_td,
-                                                         "well_id":well_id
-                                                        }
-                                )
-        num_registros_actualizados = json.loads(response.content.decode("utf-8"))['num_registros_afectados']
+        flash('Antes: {} registros'.format(num_registros_antes))
+        flash('Despues: {} registros'.format(num_registros_despues))
 
-        flash(f'Se actualizaron {num_registros_actualizados} registros')
+        return redirect(url_for('comp_status'))
 
-        return redirect(url_for('ajuste_prof_eventos'))
-
-    return render_template('ajuste_prof_eventos.html', **context)
+    return render_template('component_status.html', **context)
 
 
 @app.route('/preprocesamientoDDR', methods=['GET', 'POST'])
-def preprocesamiento_ddr():
+def preprocesar_ddr():
 
     ROOT = request.url_root
 

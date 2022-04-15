@@ -9,11 +9,11 @@
 {% endfor %}
 
 <b>
-    <h3 class="card-title">Preprocesamiento <br>DDR</h3>
+    <h3 class="card-title">Ajuste MD Current</h3>
 </b>
 
 <br>
-<form action={{ url_for( 'preprocesar_ddr' ) }} method="post">
+<form action={{ url_for( 'ajustar_md_current' ) }} method="post">
     {{ form.hidden_tag() }}
 
 {#                     Nombre del pozo                               #}
@@ -29,14 +29,28 @@
             </div>
         </div>
     </div>
+    {#                     DELTA A AJUSTAR                              #}
+    <p>{{ form.delta.label(class="form-label") }}</p>
+    <div class="container">
+
+        <div class="row justify-content-center">
+            <div class="col-6 w-75">
+                {{ form.delta(class="form-control") }}
+                {% for error in form.delta.errors %}
+                    {{ error }}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
     <br>
 
-{#                        Consultar Datos del Pozo  #}
+{#                        Ejecutar Form  #}
     <div class="d-grid gap-2 w-50 mx-auto">
         {{ form.submit_btn(class="btn btn-danger", href="{{ url_for('home') }}") }}
-        <a class="btn btn-secondary" href={{ url_for( 'home' ) }}  role="button">VOLVER</a>
+        <a class="btn btn-secondary" href={{ url_for( 'ajustar_profundidades' ) }}  role="button">VOLVER</a>
         <br>
     </div>
+
 </form>
 <br>
 

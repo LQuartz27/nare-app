@@ -6,6 +6,12 @@ import re
 import sys
 import shutil
 
+
+files_folder = os.path.join(os.getcwd(), 'static', 'xlfiles')
+if not os.path.exists(files_folder):
+    os.mkdir(files_folder)
+
+
 # PATRONES PARA REUNIONES PRE OPERACIONES
 safety_meets_pattern = r"SAFETY|MEETING|PRE[-_ ]OPER.*"
 
@@ -16,13 +22,14 @@ td_pattern = r"TD|LANDING POINT"
 drill_cement = r"DRILL.*OUT.*CEM.*"
 
 # PATRONES PARA ACTIVIDADES RELACIONADAS CON CEMENTING
-cementing_job_pattern = r"CEMENT.*JOB|CEMENT.*TOOLS|CEMENT PLUG|BALANCED PLUG|CEMENT SLURRY"
-woc_pattern = r"WOC|W.?O.?C"
+cementing_job_pattern = r"CEMENT.*JOB|CEMENT.*TOOLS|CEMENT PLUG|BALANCED PLUG|CEMENT SLURRY|CEMENTING|SLURRY"
+plugs_pattern = r"BOTTOM PLUG.*TOP PLUG"
+woc_pattern = r"WOC|W.?O.?C|WAITING ?ON ?CEMENT"
 
 # PATRONES PARA ACTIVIDADES RELACIONADAS CON CORRIDA DE CASING
 run_casing_pattern = r"CSG|CASING|R[AU]+N ?CASING|RIH .* ?CASING|RIH .* CSG|CSG.*TOOLS| CASING.*TOOLS"
-shoes_pattern = r"PACKER SHOE|CSG SHOE|CASING SHOE|WASH DOWN SHOE"
-run_liner_pattern = r"R[AU]+N ?LINER|R[AU]+N ?MESH|ASSEMBLY COMPLETION|ASSY COMPLETION"
+shoes_pattern = r"PACKER SHOE|CSG SHOE|CASING SHOE|WASH DOWN SHOE|FLOAT SHOE|FLOATING SHOE"
+run_liner_pattern = r"LINER|R[AU]+N ?LINER|R[AU]+N ?MESH|ASSEMBLY COMPLETION|ASSY COMPLETION|SLOTTED.*LINER"
 
 # PATRONES PARA ACTIVIDADES RELACIONADAS CON CORRIDA DE REGISTROS  CASTV-CBL-GR-CCL
 logging_job_pattern = r"LOGGING|E[- _]LOGS?|CASED HOLE|OPEN HOLE"
@@ -34,7 +41,7 @@ pumps_pattern = r"PCP|SBP|BARREL|ROD|STATOR|ROTOR|PLUNGER"
 # PATRONES PARA ACTIVIDADES RELACIONADAS CON GRAVEL PACK
 underreamer_pattern = r"UNDER.*REAMER"
 enlarging_pattern = r"ENLARGED?.*HOLE|ENLARGING.*HOLE|ENLARGE"
-gravel_packing_pattern = r"GRAVEL ?PACKING|GRAVEL"
+gravel_packing_pattern = r"GRAVEL ?PACKING|GRAVEL|PACKING|SXS"
 
 # PATRONES RELACIONADOS CON ESTIMULACIONES
 stim_job_pattern = r"STIMULATION|STIMULATION JOB|PICKLING|NEUTRAL RETURNS"
@@ -49,7 +56,7 @@ meetings_pattern = '|'.join([safety_meets_pattern])
 
 perfo_pattern = '|'.join([meetings_pattern, spud_pattern, drill_pattern, td_pattern, drill_cement])
 
-cementing_pattern = '|'.join([cementing_job_pattern, woc_pattern])
+cementing_pattern = '|'.join([cementing_job_pattern,plugs_pattern, woc_pattern])
 
 csg_pattern = '|'.join([run_casing_pattern, run_liner_pattern])
 
@@ -62,7 +69,6 @@ gravel_pack_pattern = '|'.join([underreamer_pattern, enlarging_pattern, gravel_p
 stimulation_pattern = '|'.join([stim_job_pattern, acids_pattern])
 
 setting_tool_pattern = '|'.join([setting_tool_pattern])
-
 
 
 meetings_regex = re.compile(meetings_pattern, re.I)
@@ -81,7 +87,8 @@ def crear_excel_actividades_segmentadas(engine_edm, TIME_SUMMARY_QRY, wellname):
     time_str = now.timestamp()
     
     ts_df = pd.read_sql(TIME_SUMMARY_QRY, engine_edm)
-    
+
+    # meetings_df = ts_df[ts_df['DESCRIPCION'].str.contains(meetings_regex)]
     drilling_df = ts_df[ts_df['DESCRIPCION'].str.contains(perfo_regex)]
     cementing_df = ts_df[ts_df['DESCRIPCION'].str.contains(cementing_regex)]
     casing_df = ts_df[ts_df['DESCRIPCION'].str.contains(csg_regex)]
@@ -91,10 +98,18 @@ def crear_excel_actividades_segmentadas(engine_edm, TIME_SUMMARY_QRY, wellname):
     stimulation_df = ts_df[ts_df['DESCRIPCION'].str.contains(stimulation_regex)]
     setting_tool_df = ts_df[ts_df['DESCRIPCION'].str.contains(setting_tool_regex)]
     
-    filename = f"{wellname}_{str(time_str).replace('.','')}.xlsx"
+    if setting_tool_df.shape[0] > 0:
+        indexes = setting_tool_df.index
+        print(indexes)
+        last_index = indexes[-1]
+        setting_tool_df = pd.concat([setting_tool_df, ts_df.iloc[indexes[-1]+1:]])
+#     setting_tool_df = pd.concat([setting_tool_df, ts_df.iloc[last_index+1:last_index+10]])
     
-    writer = pd.ExcelWriter(filename, engine='xlsxwriter')
+    
+    writer = pd.ExcelWriter(f"{wellname}_{str(time_str).replace('.','')}.xlsx", engine='xlsxwriter')
 
+
+    # meetings_df.to_excel(writer, sheet_name='MEETINGS', index=False)
     drilling_df.to_excel(writer, sheet_name='DRILLING', index=False)
     cementing_df.to_excel(writer, sheet_name='CEMENTING', index=False)
     casing_df.to_excel(writer, sheet_name='CASING', index=False)
@@ -110,20 +125,25 @@ def crear_excel_actividades_segmentadas(engine_edm, TIME_SUMMARY_QRY, wellname):
     headers_format = workbook.add_format({'bold': True})
     descript_format = workbook.add_format({'text_wrap':True})
     no_descript_format = workbook.add_format({'align':'center',
-                                            'valign':'bottom'})
+                                              'valign':'bottom'})
 
     descript_width = 80
     normal_width = 17.43
 
     for sheet in writer.sheets:
         worksheet = writer.sheets[sheet]
-        
+
         worksheet.set_row(0,None, cell_format=headers_format)
         worksheet.set_column(0,6, width=normal_width, cell_format=no_descript_format)
         worksheet.set_column(7,7, width=descript_width, cell_format=descript_format)
         worksheet.set_column(8,9, width=normal_width, cell_format=no_descript_format)
-        
+
     writer.save()
     writer.close()
     
-    return filename
+    uniquefilename= f"{wellname}_{str(time_str).replace('.','')}.xlsx"
+    filename = f"{wellname}.xlsx"
+    
+    uniquefilenamepath = os.path.join(files_folder,uniquefilename)
+
+    return uniquefilenamepath, filename
