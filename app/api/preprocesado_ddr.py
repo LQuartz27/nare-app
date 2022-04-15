@@ -102,11 +102,12 @@ def crear_excel_actividades_segmentadas(engine_edm, TIME_SUMMARY_QRY, wellname):
         indexes = setting_tool_df.index
         print(indexes)
         last_index = indexes[-1]
-        setting_tool_df = pd.concat([setting_tool_df, ts_df.iloc[indexes[-1]+1:]])
-#     setting_tool_df = pd.concat([setting_tool_df, ts_df.iloc[last_index+1:last_index+10]])
+        setting_tool_df = pd.concat([setting_tool_df, ts_df.iloc[last_index+1:]])
     
+    uniquefilename= f"{wellname}_{str(time_str).replace('.','')}.xlsx"
+    filename = f"{wellname}.xlsx"
     
-    writer = pd.ExcelWriter(f"{wellname}_{str(time_str).replace('.','')}.xlsx", engine='xlsxwriter')
+    writer = pd.ExcelWriter(uniquefilename, engine='xlsxwriter')
 
 
     # meetings_df.to_excel(writer, sheet_name='MEETINGS', index=False)
@@ -141,8 +142,7 @@ def crear_excel_actividades_segmentadas(engine_edm, TIME_SUMMARY_QRY, wellname):
     writer.save()
     writer.close()
     
-    uniquefilename= f"{wellname}_{str(time_str).replace('.','')}.xlsx"
-    filename = f"{wellname}.xlsx"
+    
     
     uniquefilenamepath = os.path.join(files_folder,uniquefilename)
 
