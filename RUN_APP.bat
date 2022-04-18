@@ -1,0 +1,1 @@
+PowerShell -NoProfile -ExecutionPolicy Bypass -Command "& './start_app.ps1'"
