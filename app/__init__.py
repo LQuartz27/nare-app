@@ -97,7 +97,7 @@ def ajustar_prof_eventos():
 
             flash(f'Se actualizaron {num_registros_actualizados} registros')
 
-            return redirect(url_for('ajuste_prof_eventos'))
+            return redirect(url_for('ajustar_prof_eventos'))
 
         return render_template('ajuste_prof_eventos.html', **context)
     

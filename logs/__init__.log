@@ -1,2 +1,118 @@
 2022/04/15 15:51:19 - INFO -  * Restarting with stat
 2022/04/18 12:30:06 - INFO -  * Restarting with stat
+2022/04/20 12:24:11 - INFO -  * Restarting with stat
+2022/05/05 15:54:00 - INFO -  * Restarting with stat
+2022/05/05 15:54:59 - INFO -  * Restarting with stat
+2022/05/05 15:55:02 - INFO - 10.5.7.225 - - [05/May/2022 15:55:02] "[32mGET / HTTP/1.1[0m" 302 -
+2022/05/05 15:55:02 - INFO - 10.5.7.225 - - [05/May/2022 15:55:02] "GET /home HTTP/1.1" 200 -
+2022/05/05 15:55:03 - INFO - 10.5.7.225 - - [05/May/2022 15:55:03] "GET /static/images/Halliburton_logo.png HTTP/1.1" 200 -
+2022/05/05 15:55:04 - INFO - 10.5.7.225 - - [05/May/2022 15:55:04] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2022/05/05 15:55:16 - INFO - 10.5.7.225 - - [05/May/2022 15:55:16] "GET /deleteCompStatus HTTP/1.1" 200 -
+2022/05/05 15:55:17 - INFO - 10.5.7.225 - - [05/May/2022 15:55:17] "GET /static/images/Halliburton_logo.png HTTP/1.1" 200 -
+2022/05/05 15:55:17 - INFO - 10.5.7.225 - - [05/May/2022 15:55:17] "GET /api/wellnames HTTP/1.1" 200 -
+2022/05/05 15:55:19 - INFO - 10.5.7.225 - - [05/May/2022 15:55:19] "GET /home HTTP/1.1" 200 -
+2022/05/05 15:55:19 - INFO - 10.5.7.225 - - [05/May/2022 15:55:19] "[36mGET /static/images/Halliburton_logo.png HTTP/1.1[0m" 304 -
+2022/05/05 15:55:20 - INFO - 10.5.7.225 - - [05/May/2022 15:55:20] "GET /ajustarProfundidades HTTP/1.1" 200 -
+2022/05/05 15:55:21 - INFO - 10.5.7.225 - - [05/May/2022 15:55:21] "GET /static/images/Halliburton_logo.png HTTP/1.1" 200 -
+2022/05/05 15:55:22 - INFO - 10.5.7.225 - - [05/May/2022 15:55:22] "GET /home HTTP/1.1" 200 -
+2022/05/05 15:55:23 - INFO - 10.5.7.225 - - [05/May/2022 15:55:23] "[36mGET /static/images/Halliburton_logo.png HTTP/1.1[0m" 304 -
+2022/05/05 15:55:24 - INFO - 10.5.7.225 - - [05/May/2022 15:55:24] "GET /preprocesamientoDDR HTTP/1.1" 200 -
+2022/05/05 15:55:25 - INFO - 10.5.7.225 - - [05/May/2022 15:55:25] "[36mGET /static/images/Halliburton_logo.png HTTP/1.1[0m" 304 -
+2022/05/05 15:55:25 - INFO - 10.5.7.225 - - [05/May/2022 15:55:25] "GET /api/wellnames HTTP/1.1" 200 -
+2022/05/05 15:55:33 - INFO - 10.5.7.225 - - [05/May/2022 15:55:33] "GET /home HTTP/1.1" 200 -
+2022/05/05 15:55:33 - INFO - 10.5.7.225 - - [05/May/2022 15:55:33] "[36mGET /static/images/Halliburton_logo.png HTTP/1.1[0m" 304 -
+2022/05/05 15:55:34 - INFO - 10.5.7.225 - - [05/May/2022 15:55:34] "GET /asignarActivityPhases HTTP/1.1" 200 -
+2022/05/05 15:55:35 - INFO - 10.5.7.225 - - [05/May/2022 15:55:35] "[36mGET /static/images/Halliburton_logo.png HTTP/1.1[0m" 304 -
+2022/05/05 15:55:35 - INFO - 10.5.7.225 - - [05/May/2022 15:55:35] "GET /api/wellnames HTTP/1.1" 200 -
+2022/05/05 15:55:38 - INFO - 10.5.7.225 - - [05/May/2022 15:55:38] "GET /home HTTP/1.1" 200 -
+2022/05/05 15:55:39 - INFO - 10.5.7.225 - - [05/May/2022 15:55:39] "[36mGET /static/images/Halliburton_logo.png HTTP/1.1[0m" 304 -
+2022/05/05 17:20:37 - INFO - 10.5.7.225 - - [05/May/2022 17:20:37] "GET /deleteCompStatus HTTP/1.1" 200 -
+2022/05/05 17:20:38 - INFO - 10.5.7.225 - - [05/May/2022 17:20:38] "GET /static/images/Halliburton_logo.png HTTP/1.1" 200 -
+2022/05/05 17:20:38 - INFO - 10.5.7.225 - - [05/May/2022 17:20:38] "GET /api/wellnames HTTP/1.1" 200 -
+2022/05/05 17:21:04 - INFO - 10.232.72.6 - - [05/May/2022 17:21:04] "GET //api/wellid/GIR%20PH-AH%20HZ9%20A12 HTTP/1.1" 200 -
+2022/05/05 17:21:04 - INFO - 10.232.72.6 - - [05/May/2022 17:21:04] "GET //api/componentStatusRows?well_id=kWfUnkUAcR HTTP/1.1" 200 -
+2022/05/05 17:21:04 - INFO - 10.232.72.6 - - [05/May/2022 17:21:04] "GET //api/componentStatusRows?well_id=kWfUnkUAcR HTTP/1.1" 200 -
+2022/05/05 17:21:04 - INFO - 10.232.72.6 - - [05/May/2022 17:21:04] "GET //api/delcomponentstatus/kWfUnkUAcR HTTP/1.1" 200 -
+2022/05/05 17:21:04 - INFO - 10.5.7.225 - - [05/May/2022 17:21:04] "[32mPOST /deleteCompStatus HTTP/1.1[0m" 302 -
+2022/05/05 17:21:05 - INFO - 10.5.7.225 - - [05/May/2022 17:21:05] "GET /deleteCompStatus HTTP/1.1" 200 -
+2022/05/05 17:21:05 - INFO - 10.5.7.225 - - [05/May/2022 17:21:05] "GET /static/images/Halliburton_logo.png HTTP/1.1" 200 -
+2022/05/05 17:21:05 - INFO - 10.5.7.225 - - [05/May/2022 17:21:05] "GET /api/wellnames HTTP/1.1" 200 -
+2022/05/05 17:21:08 - INFO - 10.5.7.225 - - [05/May/2022 17:21:08] "GET /home HTTP/1.1" 200 -
+2022/05/05 17:21:08 - INFO - 10.5.7.225 - - [05/May/2022 17:21:08] "GET /static/images/Halliburton_logo.png HTTP/1.1" 200 -
+2022/05/05 17:43:49 - INFO - 10.5.7.225 - - [05/May/2022 17:43:49] "GET /ajustarProfundidades HTTP/1.1" 200 -
+2022/05/05 17:43:50 - INFO - 10.5.7.225 - - [05/May/2022 17:43:50] "GET /static/images/Halliburton_logo.png HTTP/1.1" 200 -
+2022/05/05 17:44:48 - INFO - 10.5.7.225 - - [05/May/2022 17:44:48] "GET /ajusteMDs HTTP/1.1" 200 -
+2022/05/05 17:44:48 - INFO - 10.5.7.225 - - [05/May/2022 17:44:48] "[36mGET /static/images/Halliburton_logo.png HTTP/1.1[0m" 304 -
+2022/05/05 17:44:48 - INFO - 10.5.7.225 - - [05/May/2022 17:44:48] "GET /api/wellnames HTTP/1.1" 200 -
+2022/05/05 17:47:36 - INFO - 10.232.72.6 - - [05/May/2022 17:47:36] "GET //api/wellid/NARE%2052 HTTP/1.1" 200 -
+2022/05/05 17:47:36 - INFO - 10.232.72.6 - - [05/May/2022 17:47:36] "GET //api/ajustarMD?delta=35.1&well_id=KeFBORT6BS HTTP/1.1" 200 -
+2022/05/05 17:47:36 - INFO - 10.5.7.225 - - [05/May/2022 17:47:36] "[32mPOST /ajusteMDs HTTP/1.1[0m" 302 -
+2022/05/05 17:47:37 - INFO - 10.5.7.225 - - [05/May/2022 17:47:37] "GET /ajusteMDs HTTP/1.1" 200 -
+2022/05/05 17:47:37 - INFO - 10.5.7.225 - - [05/May/2022 17:47:37] "[36mGET /static/images/Halliburton_logo.png HTTP/1.1[0m" 304 -
+2022/05/05 17:47:37 - INFO - 10.5.7.225 - - [05/May/2022 17:47:37] "GET /api/wellnames HTTP/1.1" 200 -
+2022/05/05 17:47:41 - INFO - 10.5.7.225 - - [05/May/2022 17:47:41] "GET /ajustarProfundidades HTTP/1.1" 200 -
+2022/05/05 17:47:42 - INFO - 10.5.7.225 - - [05/May/2022 17:47:42] "[36mGET /static/images/Halliburton_logo.png HTTP/1.1[0m" 304 -
+2022/05/05 17:47:43 - INFO - 10.5.7.225 - - [05/May/2022 17:47:43] "GET /ajusteMDs HTTP/1.1" 200 -
+2022/05/05 17:47:43 - INFO - 10.5.7.225 - - [05/May/2022 17:47:43] "[36mGET /static/images/Halliburton_logo.png HTTP/1.1[0m" 304 -
+2022/05/05 17:47:43 - INFO - 10.5.7.225 - - [05/May/2022 17:47:43] "GET /api/wellnames HTTP/1.1" 200 -
+2022/05/05 17:47:44 - INFO - 10.5.7.225 - - [05/May/2022 17:47:44] "GET /ajustarProfundidades HTTP/1.1" 200 -
+2022/05/05 17:47:44 - INFO - 10.5.7.225 - - [05/May/2022 17:47:44] "[36mGET /static/images/Halliburton_logo.png HTTP/1.1[0m" 304 -
+2022/05/05 17:56:52 - INFO - 10.5.7.225 - - [05/May/2022 17:56:52] "GET /ajusteTDEventos HTTP/1.1" 200 -
+2022/05/05 17:56:53 - INFO - 10.5.7.225 - - [05/May/2022 17:56:53] "[36mGET /static/images/Halliburton_logo.png HTTP/1.1[0m" 304 -
+2022/05/05 17:56:53 - INFO - 10.5.7.225 - - [05/May/2022 17:56:53] "GET /api/wellnames HTTP/1.1" 200 -
+2022/05/05 17:57:22 - INFO - 10.232.72.6 - - [05/May/2022 17:57:22] "GET //api/wellid/NARE%2052 HTTP/1.1" 200 -
+2022/05/05 17:57:22 - INFO - 10.232.72.6 - - [05/May/2022 17:57:22] "GET //api/get_elevacion_mesa/KeFBORT6BS HTTP/1.1" 200 -
+2022/05/05 17:57:22 - INFO - 10.232.72.6 - - [05/May/2022 17:57:22] "GET //api/ajustarProfEventos/?new_td=2231&well_id=KeFBORT6BS HTTP/1.1" 200 -
+2022/05/05 17:57:22 - ERROR - Could not build url for endpoint 'ajuste_prof_eventos'. Did you mean 'ajustar_prof_eventos' instead?
+2022/05/05 17:57:22 - INFO - TRACE BACK FOUND:
+2022/05/05 17:57:22 - ERROR - Traceback (most recent call last):
+  File "C:\Landmark\nare-app\app\__init__.py", line 100, in ajustar_prof_eventos
+    return redirect(url_for('ajuste_prof_eventos'))
+  File "C:\Landmark\nare-app\venv\lib\site-packages\flask\helpers.py", line 338, in url_for
+    return appctx.app.handle_url_build_error(error, endpoint, values)
+  File "C:\Landmark\nare-app\venv\lib\site-packages\flask\helpers.py", line 325, in url_for
+    rv = url_adapter.build(
+  File "C:\Landmark\nare-app\venv\lib\site-packages\werkzeug\routing.py", line 2314, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.BuildError: Could not build url for endpoint 'ajuste_prof_eventos'. Did you mean 'ajustar_prof_eventos' instead?
+
+2022/05/05 17:57:22 - INFO - 10.5.7.225 - - [05/May/2022 17:57:22] "[32mPOST /ajusteTDEventos HTTP/1.1[0m" 302 -
+2022/05/05 17:57:22 - INFO - 10.5.7.225 - - [05/May/2022 17:57:22] "GET /error HTTP/1.1" 200 -
+2022/05/05 17:57:23 - INFO - 10.5.7.225 - - [05/May/2022 17:57:23] "GET /static/images/404.jpg HTTP/1.1" 200 -
+2022/05/05 17:57:23 - INFO - 10.5.7.225 - - [05/May/2022 17:57:23] "[36mGET /static/images/Halliburton_logo.png HTTP/1.1[0m" 304 -
+2022/05/05 17:57:28 - INFO - 10.5.7.225 - - [05/May/2022 17:57:28] "GET /ajusteTDEventos HTTP/1.1" 200 -
+2022/05/05 17:57:40 - INFO - 10.5.7.225 - - [05/May/2022 17:57:40] "GET /ajustarProfundidades HTTP/1.1" 200 -
+2022/05/05 17:57:40 - INFO - 10.5.7.225 - - [05/May/2022 17:57:40] "[36mGET /static/images/Halliburton_logo.png HTTP/1.1[0m" 304 -
+2022/05/05 17:59:05 - INFO - 10.5.7.225 - - [05/May/2022 17:59:05] "GET /home HTTP/1.1" 200 -
+2022/05/05 17:59:06 - INFO - 10.5.7.225 - - [05/May/2022 17:59:06] "[36mGET /static/images/Halliburton_logo.png HTTP/1.1[0m" 304 -
+2022/05/05 17:59:49 - INFO -  * Detected change in 'C:\\Landmark\\nare-app\\app\\__init__.py', reloading
+2022/05/05 17:59:49 - INFO -  * Restarting with stat
+2022/05/05 18:04:11 - INFO - 10.5.7.225 - - [05/May/2022 18:04:11] "GET /home HTTP/1.1" 200 -
+2022/05/05 18:04:11 - INFO - 10.5.7.225 - - [05/May/2022 18:04:11] "[36mGET /static/images/Halliburton_logo.png HTTP/1.1[0m" 304 -
+2022/05/05 18:05:44 - INFO - 10.5.7.225 - - [05/May/2022 18:05:44] "GET /ajustarProfundidades HTTP/1.1" 200 -
+2022/05/05 18:05:44 - INFO - 10.5.7.225 - - [05/May/2022 18:05:44] "GET /static/images/Halliburton_logo.png HTTP/1.1" 200 -
+2022/05/05 18:05:46 - INFO - 10.5.7.225 - - [05/May/2022 18:05:46] "GET /ajusteMDs HTTP/1.1" 200 -
+2022/05/05 18:05:46 - INFO - 10.5.7.225 - - [05/May/2022 18:05:46] "[36mGET /static/images/Halliburton_logo.png HTTP/1.1[0m" 304 -
+2022/05/05 18:05:46 - INFO - 10.5.7.225 - - [05/May/2022 18:05:46] "GET /api/wellnames HTTP/1.1" 200 -
+2022/05/05 18:06:39 - INFO - 10.232.72.6 - - [05/May/2022 18:06:39] "GET //api/wellid/JAZ%20M%2010 HTTP/1.1" 200 -
+2022/05/05 18:06:39 - INFO - 10.232.72.6 - - [05/May/2022 18:06:39] "GET //api/ajustarMD?delta=-2&well_id=BknqGosc81 HTTP/1.1" 200 -
+2022/05/05 18:06:39 - INFO - 10.5.7.225 - - [05/May/2022 18:06:39] "[32mPOST /ajusteMDs HTTP/1.1[0m" 302 -
+2022/05/05 18:06:39 - INFO - 10.5.7.225 - - [05/May/2022 18:06:39] "GET /ajusteMDs HTTP/1.1" 200 -
+2022/05/05 18:06:39 - INFO - 10.5.7.225 - - [05/May/2022 18:06:39] "[36mGET /static/images/Halliburton_logo.png HTTP/1.1[0m" 304 -
+2022/05/05 18:06:40 - INFO - 10.5.7.225 - - [05/May/2022 18:06:40] "GET /api/wellnames HTTP/1.1" 200 -
+2022/05/05 18:06:41 - INFO - 10.5.7.225 - - [05/May/2022 18:06:41] "GET /ajustarProfundidades HTTP/1.1" 200 -
+2022/05/05 18:06:42 - INFO - 10.5.7.225 - - [05/May/2022 18:06:42] "[36mGET /static/images/Halliburton_logo.png HTTP/1.1[0m" 304 -
+2022/05/05 18:06:43 - INFO - 10.5.7.225 - - [05/May/2022 18:06:43] "GET /ajusteTDEventos HTTP/1.1" 200 -
+2022/05/05 18:06:43 - INFO - 10.5.7.225 - - [05/May/2022 18:06:43] "[36mGET /static/images/Halliburton_logo.png HTTP/1.1[0m" 304 -
+2022/05/05 18:06:43 - INFO - 10.5.7.225 - - [05/May/2022 18:06:43] "GET /api/wellnames HTTP/1.1" 200 -
+2022/05/05 18:06:51 - INFO - 10.232.72.6 - - [05/May/2022 18:06:51] "GET //api/wellid/JAZ%20M%2010 HTTP/1.1" 200 -
+2022/05/05 18:06:51 - INFO - 10.232.72.6 - - [05/May/2022 18:06:51] "GET //api/get_elevacion_mesa/BknqGosc81 HTTP/1.1" 200 -
+2022/05/05 18:06:51 - INFO - 10.232.72.6 - - [05/May/2022 18:06:51] "GET //api/ajustarProfEventos/?new_td=1780&well_id=BknqGosc81 HTTP/1.1" 200 -
+2022/05/05 18:06:51 - INFO - 10.5.7.225 - - [05/May/2022 18:06:51] "[32mPOST /ajusteTDEventos HTTP/1.1[0m" 302 -
+2022/05/05 18:06:51 - INFO - 10.5.7.225 - - [05/May/2022 18:06:51] "GET /ajusteTDEventos HTTP/1.1" 200 -
+2022/05/05 18:06:51 - INFO - 10.5.7.225 - - [05/May/2022 18:06:51] "[36mGET /static/images/Halliburton_logo.png HTTP/1.1[0m" 304 -
+2022/05/05 18:06:51 - INFO - 10.5.7.225 - - [05/May/2022 18:06:51] "GET /api/wellnames HTTP/1.1" 200 -
+2022/05/05 18:06:54 - INFO - 10.5.7.225 - - [05/May/2022 18:06:54] "GET /ajustarProfundidades HTTP/1.1" 200 -
+2022/05/05 18:06:55 - INFO - 10.5.7.225 - - [05/May/2022 18:06:55] "[36mGET /static/images/Halliburton_logo.png HTTP/1.1[0m" 304 -
+2022/05/05 18:06:58 - INFO - 10.5.7.225 - - [05/May/2022 18:06:58] "GET /home HTTP/1.1" 200 -
+2022/05/05 18:06:59 - INFO - 10.5.7.225 - - [05/May/2022 18:06:59] "[36mGET /static/images/Halliburton_logo.png HTTP/1.1[0m" 304 -
