@@ -7,12 +7,12 @@ DBServer = 'SQLSERVER'
 DBName = 'EDM150'
 User = 'edmadmin'
 Password = r'EdmMansa#150'  #    EdmMansa23#   EdmMansa#150
-Server = '10.232.88.31' #   10.11.24.149 10.232.88.31
+Server = '10.100.0.9' #   10.11.24.149 10.232.88.31
 Port = '1433'
 tnsName = ''
 ServiceName = ''
 Sid = ''
-Dsn = 'MANSA150'
+Dsn = 'NARE'
 
 # CREATING THE SQL SERVER CONNECTION URL
 connection_url = URL.create(

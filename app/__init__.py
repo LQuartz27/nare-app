@@ -7,6 +7,8 @@ from flask import (Flask, flash, redirect, render_template,
 
 from app.api import *
 from app.api.preprocesado_ddr import *
+from app.api.taladros_daily_ops import *
+
 from app.database import *
 from app.api.queries import *
 from app.activity_phases import *
@@ -396,6 +398,40 @@ def preprocesar_ddr():
         logging.info('TRACE BACK FOUND:')
         logging.error(traceback.format_exc())
         return redirect(url_for('error_page'))
+
+
+@app.route('/taladros_dailys_ops', methods=['GET', 'POST'])
+def taladros_dailys_ops():
+    try:
+        ROOT = request.url_root
+
+        form = PreprocesamientoDDRForm()
+
+        context = {
+            'form': form,
+        }
+
+        if form.validate_on_submit():
+            nombrepozo = form.nombrepozo.data
+
+            engine = create_engine(connection_url)
+        
+            TALADROS_QRY = get_taladros_qry(nombrepozo)
+            DAILY_OPS_QRY = get_events_time_summary_qry(nombrepozo)
+            
+            output, filename = create_taladros_dailys_excel(engine, nombrepozo, text(TALADROS_QRY), text(DAILY_OPS_QRY))
+
+            return send_file(output, as_attachment=True, attachment_filename=filename)
+
+        return render_template('taladros_dailys_ops.html', **context)
+
+    except Exception as e:
+        print(e)
+        logging.error(e)
+        logging.info('TRACE BACK FOUND:')
+        logging.error(traceback.format_exc())
+        return redirect(url_for('error_page'))
+
 
 @app.route('/asignarActivityPhases', methods=['GET', 'POST'])
 def asignar_activity_phases():
