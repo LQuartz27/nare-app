@@ -418,8 +418,9 @@ def taladros_dailys_ops():
         
             TALADROS_QRY = get_taladros_qry(nombrepozo)
             DAILY_OPS_QRY = get_events_time_summary_qry(nombrepozo)
+            WE_STATUS_QRY = get_wellbore_eq_status_qry(nombrepozo)
             
-            output, filename = create_taladros_dailys_excel(engine, nombrepozo, text(TALADROS_QRY), text(DAILY_OPS_QRY))
+            output, filename = create_taladros_dailys_excel(engine, nombrepozo, text(TALADROS_QRY), text(DAILY_OPS_QRY), text(WE_STATUS_QRY))
 
             return send_file(output, as_attachment=True, attachment_filename=filename)
 
@@ -464,6 +465,20 @@ def asignar_activity_phases():
         logging.info('TRACE BACK FOUND:')
         logging.error(traceback.format_exc())
         return redirect(url_for('error_page'))
+
+
+@app.route('/identificar_ocm', methods=['GET', 'POST'])
+def identificar_ocm():
+    try:
+        return render_template('en_construccion.html')
+
+    except Exception as e:
+        print(e)
+        logging.error(e)
+        logging.info('TRACE BACK FOUND:')
+        logging.error(traceback.format_exc())
+        return redirect(url_for('error_page'))
+
 
 @app.route('/preactualizacion', methods=['GET', 'POST'])
 def preactualizacion():

@@ -218,6 +218,7 @@ def get_taladros_qry(wellname):
            event_code AS EVENTO,
            E.date_ops_start AS INICIO_EVENTO,
            E.primary_service_provider AS PRINC_PROVEEDOR,
+           event_reason AS EVENT_REASON,
            rig_name AS RIG_NAME,
            rig_owner AS RIG_OWNER,
            rig_no AS RIG_No
@@ -263,3 +264,39 @@ def get_events_time_summary_qry(wellname):
          
     """
     return ALL_EVENTS_TIME_SUMMARY_QUERY
+
+
+def get_wellbore_eq_status_qry(wellname):
+    WE_STATUS_QUERY = f"""
+    SELECT
+     CD_WELLBORE.wellbore_name AS WELLBORE,
+     DM_EVENT.event_code AS EVENTO,
+     DM_EVENT.date_ops_start AS INICIO_EVENTO, 
+     DM_REPORT_JOURNAL.report_no AS REPORT_NUM,
+     DM_REPORT_JOURNAL.date_report AS REPORT_DATE, 
+     CD_ASSEMBLY.assembly_name AS ENSAMBLAJE,
+     CD_ASSEMBLY_STATUS.status AS STATUS, 
+     CD_ASSEMBLY_STATUS.date_status AS STATUS_DATE
+     
+    FROM
+         CD_ASSEMBLY_STATUS, CD_ASSEMBLY, CD_WELLBORE, CD_WELL, CD_SITE, 
+         DM_REPORT_JOURNAL, DM_EVENT
+    WHERE
+         (((CD_WELL.well_common_name = '{wellname}'))) AND ((CD_ASSEMBLY.well_id = 
+         CD_ASSEMBLY_STATUS.well_id AND CD_ASSEMBLY.wellbore_id = 
+         CD_ASSEMBLY_STATUS.wellbore_id AND CD_ASSEMBLY.assembly_id = 
+         CD_ASSEMBLY_STATUS.assembly_id) AND (CD_WELLBORE.well_id = 
+         CD_ASSEMBLY.well_id AND CD_WELLBORE.wellbore_id = CD_ASSEMBLY.wellbore_id) 
+         AND (CD_WELL.well_id = CD_WELLBORE.well_id) AND (CD_SITE.site_id = 
+         CD_WELL.site_id) AND (DM_REPORT_JOURNAL.report_journal_id = 
+         CD_ASSEMBLY.report_journal_id) AND (CD_WELL.well_id = 
+         DM_REPORT_JOURNAL.well_id) AND (DM_EVENT.well_id = 
+         DM_REPORT_JOURNAL.well_id AND DM_EVENT.event_id = 
+         DM_REPORT_JOURNAL.event_id) AND (CD_WELL.well_id = DM_EVENT.well_id) AND 
+         (CD_WELLBORE.well_id = DM_REPORT_JOURNAL.well_id AND 
+         CD_WELLBORE.wellbore_id = DM_REPORT_JOURNAL.wellbore_id))
+    ORDER BY
+         3 ASC, 4 ASC
+    """
+    
+    return WE_STATUS_QUERY
