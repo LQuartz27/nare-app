@@ -50,25 +50,41 @@ def asignar_activity_phases(wellname):
     writer.close()
 
     with edm_engine.connect() as con:
-        
+                
         ASIGNAR_P_QRY = get_asignar_P_qry()
         UPDATE_ACTIVITY_PHASES_MOB = get_update_phase_mob()
         UPDATE_ACTIVITY_PHASES_OCM = get_update_phase_ocm()
         UPDATE_ACTIVITY_PHASES_ABA = get_update_phase_aba()
         UPDATE_ACTIVITY_PHASES_SERVICES = get_update_phase_services()
 
-        con.execute(ASIGNAR_P_QRY)
-        con.execute(UPDATE_ACTIVITY_PHASES_MOB)
-        con.execute(UPDATE_ACTIVITY_PHASES_OCM)
-        con.execute(UPDATE_ACTIVITY_PHASES_ABA)
-        con.execute(UPDATE_ACTIVITY_PHASES_SERVICES)
-        
-        for idx, row_serie in full_activities_df.iterrows():
-            
-            activity_id = row_serie['activity_id']
-            well_id = row_serie['well_id']
-            asigned_phase = row_serie['asigned_phase']
+        trans = con.begin()
 
-            update_q = get_update_phase_qry(activity_id, well_id, asigned_phase)
-            con.execute(update_q)
+        try:
+            con.execute(ASIGNAR_P_QRY)
+            con.execute(UPDATE_ACTIVITY_PHASES_MOB)
+            con.execute(UPDATE_ACTIVITY_PHASES_OCM)
+            con.execute(UPDATE_ACTIVITY_PHASES_ABA)
+            con.execute(UPDATE_ACTIVITY_PHASES_SERVICES)
+
+            trans.commit()
+        except:
+            trans.rollback()
+
+            raise Exception('No se ejecutaron exitosamente los queries de asignacion de fases genéricos')
+
+        try:
+            for idx, row_serie in full_activities_df.iterrows():
+                
+                activity_id = row_serie['activity_id']
+                well_id = row_serie['well_id']
+                asigned_phase = row_serie['asigned_phase']
+
+                update_q = get_update_phase_qry(activity_id, well_id, asigned_phase)
+                con.execute(update_q)
+        except:
+            trans.rollback()
+            raise Exception('No se logró asignar fase')
+            
+        trans.commit()
+
             

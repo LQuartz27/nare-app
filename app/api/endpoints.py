@@ -119,26 +119,7 @@ def del_component_status(well_id):
             cursor_borrado_result = connection.execute(text(BORRAR_COMP_STATUS_QUERY))
 
             trans.commit()
-            # from sqlalchemy import Table, MetaData
-
-            # metadata_obj = MetaData()
-            # metadata_obj.reflect(connection)      
-
-            # # print(metadata_obj.tables)
-            # # print(metadata_obj.tables.keys())
-            # CD_ASSEMBLY_COMP_STATUS = metadata_obj.tables['CD_ASSEMBLY_COMP_STATUS_T']
-
-            # print(type(CD_ASSEMBLY_COMP_STATUS))
-            # print(CD_ASSEMBLY_COMP_STATUS)
-
-            # dele = CD_ASSEMBLY_COMP_STATUS.delete().where(CD_ASSEMBLY_COMP_STATUS.c.well_id == 'h9yJX1iFMu')
-            # print(dele)
-            # connection.execute(dele)
-            # cursor_borrado_result = connection.execute(text(BORRAR_COMP_STATUS_QUERY))
             
-            # print(type(cursor_borrado_result))
-            # print(cursor_borrado_result)                                             
-            # useless_count = cursor_borrado_result.rowcount
         except:
             trans.rollback()
             raise Exception('No se logró eliminar los component status del pozo')
