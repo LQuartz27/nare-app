@@ -209,3 +209,94 @@ def get_asignar_P_qry(well_id):
           DM_ACTIVITY.well_id='{well_id}'
     """
     return QRY
+
+
+def get_taladros_qry(wellname):
+
+    taladros_qry = f"""
+    SELECT well_common_name AS POZO,
+           event_code AS EVENTO,
+           E.date_ops_start AS INICIO_EVENTO,
+           E.primary_service_provider AS PRINC_PROVEEDOR,
+           event_reason AS EVENT_REASON,
+           rig_name AS RIG_NAME,
+           rig_owner AS RIG_OWNER,
+           rig_no AS RIG_No
+    FROM DM_RIG_OPERATION_EVENT_LINK_T R
+    INNER JOIN CD_WELL W ON R.well_id = W.well_id
+    INNER JOIN DM_EVENT E ON R.event_id=E.event_id
+    INNER JOIN CD_RIG RIG ON R.rig_id=RIG.rig_id
+    WHERE W.well_id = (SELECT well_id FROM CD_WELL WHERE well_common_name='{wellname}')
+    ORDER BY E.date_ops_start ASC
+
+    """
+    
+    return taladros_qry
+
+
+def get_events_time_summary_qry(wellname):
+
+    ALL_EVENTS_TIME_SUMMARY_QUERY = f"""
+    SELECT
+         CD_WELL.well_common_name AS POZO,
+         CD_WELLBORE.wellbore_name AS WELLBORE,
+         DM_EVENT.event_code AS SIGLA,
+         DM_EVENT.date_ops_start AS EVENT_START_DATE,
+         DM_DAILY.report_no AS NUM_REPORTE,
+         --DM_DAILY.date_report AS FECHA_REPORTE,
+         DM_ACTIVITY.time_from AS TIME_FROM, 
+         DM_ACTIVITY.time_to AS TIME_TO,
+         DM_ACTIVITY.activity_duration AS DURACION, 
+         DM_ACTIVITY.activity_memo AS DESCRIPCION
+    FROM
+         DM_ACTIVITY, DM_DAILY, DM_EVENT, CD_SITE, CD_WELLBORE, CD_WELL LEFT OUTER 
+         JOIN CD_DATUM ON (CD_WELL.well_id = CD_DATUM.well_id)
+    WHERE
+         (CD_WELL.well_common_name LIKE '%{wellname}%' )  AND
+           ((DM_DAILY.well_id = DM_ACTIVITY.well_id AND DM_DAILY.event_id = DM_ACTIVITY.event_id AND 
+            DM_DAILY.daily_id = DM_ACTIVITY.daily_id) AND (DM_EVENT.well_id = DM_DAILY.well_id AND DM_EVENT.event_id = DM_DAILY.event_id) AND 
+         (CD_WELL.well_id = DM_EVENT.well_id) AND (CD_SITE.site_id = CD_WELL.site_id) AND (CD_WELLBORE.well_id = DM_DAILY.well_id AND 
+         CD_WELLBORE.wellbore_id = DM_DAILY.wellbore_id) AND (CD_WELL.well_id = CD_WELLBORE.well_id) AND (CD_WELLBORE.well_id = DM_ACTIVITY.well_id AND 
+         CD_WELLBORE.wellbore_id = DM_ACTIVITY.wellbore_id)) AND (( ( 
+         {'{fn UCASE(CD_DATUM.is_default )}'} = 'Y' ) OR ( CD_DATUM.datum_id IS NULL )))
+         
+    ORDER BY 7 ASC
+         
+    """
+    return ALL_EVENTS_TIME_SUMMARY_QUERY
+
+
+def get_wellbore_eq_status_qry(wellname):
+    WE_STATUS_QUERY = f"""
+    SELECT
+     CD_WELLBORE.wellbore_name AS WELLBORE,
+     DM_EVENT.event_code AS EVENTO,
+     DM_EVENT.date_ops_start AS INICIO_EVENTO, 
+     DM_REPORT_JOURNAL.report_no AS REPORT_NUM,
+     DM_REPORT_JOURNAL.date_report AS REPORT_DATE, 
+     CD_ASSEMBLY.assembly_name AS ENSAMBLAJE,
+     CD_ASSEMBLY_STATUS.status AS STATUS, 
+     CD_ASSEMBLY_STATUS.date_status AS STATUS_DATE
+     
+    FROM
+         CD_ASSEMBLY_STATUS, CD_ASSEMBLY, CD_WELLBORE, CD_WELL, CD_SITE, 
+         DM_REPORT_JOURNAL, DM_EVENT
+    WHERE
+         (((CD_WELL.well_common_name = '{wellname}'))) AND ((CD_ASSEMBLY.well_id = 
+         CD_ASSEMBLY_STATUS.well_id AND CD_ASSEMBLY.wellbore_id = 
+         CD_ASSEMBLY_STATUS.wellbore_id AND CD_ASSEMBLY.assembly_id = 
+         CD_ASSEMBLY_STATUS.assembly_id) AND (CD_WELLBORE.well_id = 
+         CD_ASSEMBLY.well_id AND CD_WELLBORE.wellbore_id = CD_ASSEMBLY.wellbore_id) 
+         AND (CD_WELL.well_id = CD_WELLBORE.well_id) AND (CD_SITE.site_id = 
+         CD_WELL.site_id) AND (DM_REPORT_JOURNAL.report_journal_id = 
+         CD_ASSEMBLY.report_journal_id) AND (CD_WELL.well_id = 
+         DM_REPORT_JOURNAL.well_id) AND (DM_EVENT.well_id = 
+         DM_REPORT_JOURNAL.well_id AND DM_EVENT.event_id = 
+         DM_REPORT_JOURNAL.event_id) AND (CD_WELL.well_id = DM_EVENT.well_id) AND 
+         (CD_WELLBORE.well_id = DM_REPORT_JOURNAL.well_id AND 
+         CD_WELLBORE.wellbore_id = DM_REPORT_JOURNAL.wellbore_id))
+    ORDER BY
+         3 ASC, 4 ASC
+    """
+    
+    return WE_STATUS_QUERY

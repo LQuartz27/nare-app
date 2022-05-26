@@ -13,14 +13,14 @@ User = 'edmadmin'
 Password_EVIDENCIAS = r'EdmMansa_22#'
 Password_EDM = r'EdmMansa#150'
 
-server_EDM = '10.232.88.31'
+server_EDM = '10.100.0.9'
 server_EVIDENCIAS = '10.11.24.149'
 
 Port = '1433'
 tnsName = ''
 ServiceName = ''
 Sid = ''
-Dsn = 'MANSA150'
+Dsn = 'NARE'
 
 # CREATING THE SQL SERVER CONNECTION URL
 edm_connection_url = URL.create(
