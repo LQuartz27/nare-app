@@ -588,34 +588,16 @@ def crear_ocm():
         return redirect(url_for('error_page'))
 
 
-@app.route('/preactualizacion', methods=['GET', 'POST'])
-def preactualizacion():
+@app.route('/propiedades_casing', methods=['GET', 'POST'])
+def propiedades_casing():
+    try:
 
-    preactualizacion_form = PreActualizacionForm()
+        return render_template('en_construccion.html')
 
-    wellcommon_names_choices, _ = get_well_common_names()
-    print(wellcommon_names_choices)
-    print(_)
-
-    preactualizacion_form.nombrepozo.choices = wellcommon_names_choices
-    context = {
-        'preactualizacion_form': preactualizacion_form
-    }
-
-    if preactualizacion_form.validate_on_submit():
-        nombrepozo = preactualizacion_form.nombrepozo.data
-        td_pozo = preactualizacion_form.td_pozo.data
-        elevacion_mesa = preactualizacion_form.elevacion_mesa.data
-        elevacion_terreno = preactualizacion_form.elevacion_terreno.data
-        geometria = preactualizacion_form.geometria.data
-
-        print('nombrepozo', nombrepozo)
-        print('td_pozo', td_pozo)
-        print('elevacion_mesa', elevacion_mesa)
-        print('elevacion_terreno', elevacion_terreno)
-        print('geometria', geometria)
-
-        return redirect(url_for('preactualizacion'))
-
-    return render_template('preactualizacion.html', **context)
+    except Exception as e:
+        print(e)
+        logging.error(e)
+        logging.info('TRACE BACK FOUND:')
+        logging.error(traceback.format_exc())
+        return redirect(url_for('error_page'))
 
