@@ -1,29 +1,27 @@
 import random
 import string
-from dateutil.relativedelta import relativedelta
-import numpy as np
-from numpy import loadtxt
+
 import pandas as pd
 import pickle
 import re
-from statistics import mean
+import os
 
 import nltk
-# nltk.download('popular')
-
 from nltk.corpus import stopwords
-from sklearn import preprocessing
 from nltk.stem import WordNetLemmatizer
-from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.feature_extraction.text import TfidfTransformer
-from sklearn.model_selection import RandomizedSearchCV
-from sklearn.model_selection import train_test_split
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import (classification_report,
-                             confusion_matrix,
-                             f1_score,
-                             plot_confusion_matrix,
-                             accuracy_score)
+# nltk.download('popular')
+# nltk.download('wordnet')
+# nltk.download('omw-1.4')
+
+print(os.getcwd())
+# Cargue del modelo entrenado
+model_rf = pickle.load(open(r".\app\api\prediction_models\rf.sav", 'rb'))
+
+# Cargue del vectorizador entrenado
+vectorizer = pickle.load(open(r".\app\api\prediction_models\vectorizer.sav", 'rb'))
+
+# Cargue del codificador de etiquetas
+le = pickle.load(open(r".\app\api\prediction_models\label_encoder.sav", 'rb'))
 
 
 def generar_string(charnum):
@@ -91,31 +89,6 @@ def encuentra_key(base,pozo,key1,key2):
     return "El Key1 y Key 2 no están dentro del ultimo 20% de las actividades"
 
 
-def predecir_modelo_deterministico(data, wellname):
-    data["Operación"] = data["Operación"].str.lower().str.replace(r"\W"," ")
-    data = data.dropna()
-    data['Codigo'] = pd.to_numeric(data['Codigo'],errors = 'coerce')
-    data = data.reset_index(drop=True)
-
-    fecha_encontrada = encuentra_key(data,wellname,"setting","tubing")
-
-    if type(fecha_encontrada)==str :
-        fecha_encontrada = None
-
-    elif type(fecha_encontrada) == pd.DataFrame:
-        fecha_encontrada = fecha_encontrada['Hasta'].\
-                                values[0].astype('datetime64[s]').item()\
-                                         .strftime("%m/%d/%Y %H:%M")
-
-    return fecha_encontrada
-
-    
-
-
-
-def predecir_NN():
-    pass
-
 def pre_pro_well(base,well):
     '''
     FUNCION QUE SELECCIONA UN POZO, TRANSFORMA LOS DATOS COMO INPUT DEL MODELO
@@ -134,8 +107,8 @@ def pre_pro_well(base,well):
     X = X.reset_index(drop=True)
 
     # Libreria de stopwords en ingles
-    nltk.download('wordnet')
-    nltk.download('omw-1.4')
+    # nltk.download('wordnet')
+    # nltk.download('omw-1.4')
 
     # Lista de textos vacia
     documents = []
@@ -176,6 +149,7 @@ def pre_pro_well(base,well):
     
     return (documents,base)
 
+
 def identificacion_OCM(base,well):
     '''
     Función que usa un modelo de NPL para identificar las actividades y encontrar el inicio de OCM
@@ -205,14 +179,14 @@ def identificacion_OCM(base,well):
     # CARGA DE MODELOS
     #-----------------------------------------------------------------------------
 
-    # Cargue del modelo entrenado
-    model_rf = pickle.load(open("rf.sav", 'rb'))
+    # # Cargue del modelo entrenado
+    # model_rf = pickle.load(open("rf.sav", 'rb'))
 
-    # Cargue del vectorizador entrenado
-    vectorizer = pickle.load(open("vectorizer.sav", 'rb'))
+    # # Cargue del vectorizador entrenado
+    # vectorizer = pickle.load(open("vectorizer.sav", 'rb'))
 
-    # Cargue del codificador de etiquetas
-    le = pickle.load(open("label_encoder.sav", 'rb'))
+    # # Cargue del codificador de etiquetas
+    # le = pickle.load(open("label_encoder.sav", 'rb'))
 
     #-----------------------------------------------------------------------------
     # PREPROCESAMIENTO DE LA INFORMACION PARA LA PREDICCION DEL POZO SOLICITADO
@@ -267,3 +241,28 @@ def identificacion_OCM(base,well):
     respuesta =str("El Final del evento ODR en el Pozo " + str(well) + " se da en la fecha: " + str(ODR_Finish)+"\n")
     
     return(base_val,respuesta,ODR_Finish)
+
+
+def predecir_modelo_deterministico(data, wellname):
+    data["Operación"] = data["Operación"].str.lower().str.replace(r"\W"," ")
+    data = data.dropna()
+    data['Codigo'] = pd.to_numeric(data['Codigo'],errors = 'coerce')
+    data = data.reset_index(drop=True)
+
+    fecha_encontrada = encuentra_key(data,wellname,"setting","tubing")
+
+    if type(fecha_encontrada)==str :
+        fecha_encontrada = None
+
+    elif type(fecha_encontrada) == pd.DataFrame:
+        fecha_encontrada = fecha_encontrada['Hasta'].\
+                                values[0].astype('datetime64[s]').item()\
+                                         .strftime("%m/%d/%Y %H:%M")
+
+    return fecha_encontrada
+
+
+def predecir_RF(base, wellname):
+    df,respuesta, ODR_Finish = identificacion_OCM(base, wellname)
+
+    return ODR_Finish

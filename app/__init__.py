@@ -503,12 +503,10 @@ def crear_ocm():
 
         table_data_dict = json.loads(response.content.decode("utf-8"))['time_summary_df']
         prediccion_deterministica = json.loads(response.content.decode("utf-8"))['prediccion_deterministica']
-        prediccion_NN = json.loads(response.content.decode("utf-8"))['prediccion_NN']
-
-        prediccion_NN = '11/04/2012 06:30'
+        prediccion_RF = json.loads(response.content.decode("utf-8"))['prediccion_RF']
 
         print(type(prediccion_deterministica), prediccion_deterministica)
-        print(type(prediccion_NN), prediccion_NN)
+        print(type(prediccion_RF), prediccion_RF)
 
         if not prediccion_deterministica:
             prediccion_deterministica = 'Inicio OCM No Identificado'
@@ -520,14 +518,15 @@ def crear_ocm():
         index_len = len(table_indexes)
 
         ocm_choices = [(prediccion_deterministica, f'(Determinístico) OCM podría iniciar : {prediccion_deterministica}'),
-                       (prediccion_NN, f'(Probabilístico) OCM podría iniciar : {prediccion_NN}')]
+                       (prediccion_RF, f'(Probabilístico) OCM podría iniciar : {prediccion_RF}'),
+                       ('', "Ninguna de las anteriores")]
         
         form.opciones_inicio_ocm.choices = ocm_choices
-
+        
         context = {
             'form': form,
             'wellname':wellname,
-            'prediccion_NN':prediccion_NN,
+            'prediccion_NN':prediccion_RF,
             'prediccion_deterministica':prediccion_deterministica,
             'columns_names':columns_names,
             'columns_vals': columns_vals,
@@ -550,7 +549,7 @@ def crear_ocm():
             ultima_fecha_en_dailys_ops = columns_vals[-1][1]
             print('ultima_fecha_en_dailys_ops: ',ultima_fecha_en_dailys_ops)
 
-            if (not fechahora_inicio_ocm) or (not opcion_seleccionada):
+            if (not fechahora_inicio_ocm) and (not opcion_seleccionada):
                 flash("Selecciona o digita un inicio de OCM")
                 return redirect(url_for('crear_ocm', wellname=wellname))
 

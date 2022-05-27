@@ -312,6 +312,7 @@ def predecir_inicio_OCM():
     base_df.sort_values(by=['Desde'],ascending=[1],inplace=True)
 
     fecha_ocm = predecir_modelo_deterministico(base_df, wellname)
+    fecha_ocm_RF = predecir_RF(base_df, wellname)
 
     base_df['Operación'] = base_df['Operación'].str.upper()
 
@@ -329,7 +330,7 @@ def predecir_inicio_OCM():
     
     response = {"time_summary_df": last_rows_df.to_dict('split'),
                 "prediccion_deterministica":fecha_ocm,
-                "prediccion_NN":fecha_ocm}
+                "prediccion_RF":fecha_ocm_RF}
 
     return jsonify(response)
 
