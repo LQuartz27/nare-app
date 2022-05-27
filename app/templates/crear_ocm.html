@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% block content %}
+
+{% for message in get_flashed_messages() %}
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+{% endfor %}
+
+<b>
+    <h3 class="card-title">Creación del OCM</h3>
+</b>
+<br>
+<h5 class="card-subtitle mb-2 text-muted">{{wellname}}</h6>
+
+<br>
+
+<div class="table-responsive">
+  <table class="table" style="display:block;width:100%;max-height:30vh;overflow-y:auto;border-collapse: collapse;">
+    <thead style="position: sticky; top: 0; z-index: 1;">
+      <tr class="table-dark">
+        {% for col in columns_names %}
+          <th scope="col">{{col}}</th>
+        {% endfor %}      
+      </tr>
+    </thead>
+    <tbody >
+      {% for row in columns_vals %}
+      <tr>
+        {% for i in range(single_row_len) %}
+          {% if ((row[0] == prediccion_deterministica) or (row[0] == prediccion_NN)) %}
+            <td class="table-warning">{{row[i]}}</td>
+          {% else %}
+            <td>{{row[i]}}</td>
+          {% endif %}
+        {% endfor %}
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{#<ul class="list-group list-group-flush">#}
+{#    <li class="list-group-item">(Determinístico) OCM podría iniciar : {{prediccion_deterministica}}</li>#}
+{#   <li class="list-group-item">(Probabilístico) OCM podría iniciar : {{prediccion_NN}}</li>#}
+{#</ul>#}
+
+<form action={{ url_for('crear_ocm', wellname=wellname) }} method="post">
+    {{ form.hidden_tag() }}
+    <br>
+    {#           OPCIONES FECHA HORA INICIO OCM   class="form-control"       #}
+    <b>
+      <p>{{ form.opciones_inicio_ocm.label(class="form-label") }}</p>
+    </b>
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-6 w-75">
+          {% for subfield in form.opciones_inicio_ocm %}
+            <div class="form-check">
+                  <tr>
+                      <td>{{ subfield(class="form-check-input") }}</td>
+                      <td>{{ subfield.label(class="form-check-label") }}</td>
+                  </tr>
+            </div>
+          {% endfor %}
+                {% for error in form.opciones_inicio_ocm.errors %}
+                {{ error }}
+                {% endfor %}
+            </div>
+          </div>
+        </div>
+        <br>
+        {#                     FECHA HORA INICIO OCM   class="form-control"                            #}
+        <b>
+          <p>{{ form.fechahora_inicio_ocm.label(class="form-label") }}</p>
+        </b>
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-6 w-75">
+                    {{ form.fechahora_inicio_ocm(class= "datepicker") }}
+                    {% for error in form.fechahora_inicio_ocm.errors %}
+                      {{ error }}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <br>
+        {#                        INSERTAR OCM  #}
+    <div class="d-grid gap-2 w-50 mx-auto">
+        {{ form.submit_btn(class="btn btn-danger", href="{{ url_for('home') }}") }}
+        <a class="btn btn-secondary" href={{ url_for( 'identificar_ocm' ) }}  role="button">VOLVER</a>
+        <br>
+    </div>
+</form>
+<br>
+
+{% endblock %}
+{% block aditionalScripts %}
+<script>
+    $(function() {
+        $.ajax({
+            url: '{{ url_for("api.well_names") }}'
+            }).done(function (data){
+                $('#well-name').autocomplete({
+                    source: data,
+                    minLength: 2
+                });
+            });
+        });
+</script>
+{% endblock %}

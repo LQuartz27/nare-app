@@ -300,3 +300,174 @@ def get_wellbore_eq_status_qry(wellname):
     """
     
     return WE_STATUS_QUERY
+
+
+def get_prediccion_ocm_base_qry(wellname):
+    QRY=f"""
+    SELECT
+        CD_WELL.well_common_name AS Nombre,
+        DM_EVENT.event_code AS Codigo,
+        DM_ACTIVITY.md_from + {'{fn IFNULL(CD_DATUM.datum_elevation, 0)}'} AS MDFrom,
+        DM_ACTIVITY.md_to + {'{fn IFNULL(CD_DATUM.datum_elevation, 0)}'} AS MDto, 
+        DM_ACTIVITY.time_from AS Desde, 
+        DM_ACTIVITY.time_to  AS Hasta, 
+        DM_ACTIVITY.activity_memo AS Operación
+    FROM
+        DM_ACTIVITY, DM_EVENT, CD_SITE, CD_WELL LEFT OUTER JOIN CD_DATUM ON 
+        (CD_WELL.well_id = CD_DATUM.well_id) 
+    WHERE
+        (DM_EVENT.event_code IN('ODR', 'OCM')) AND
+        (CD_WELL.well_common_name = '{wellname}') AND
+        ((DM_EVENT.well_id = DM_ACTIVITY.well_id AND 
+          DM_EVENT.event_id = DM_ACTIVITY.event_id) AND
+         (CD_WELL.well_id = DM_EVENT.well_id) AND
+         (CD_SITE.site_id = CD_WELL.site_id)
+        ) AND
+        (( ( {'{fn UCASE( CD_DATUM.is_default )}'} = 'Y' ) OR
+           ( CD_DATUM.datum_id IS NULL )
+        ))
+    """
+
+    return QRY
+
+def get_events_ids_qry():
+    QRY = """
+    SELECT event_id FROM dm_event
+    """
+    return QRY
+
+
+def get_insert_event_qry(well_id, neweventid, startdate, finaldate):
+    null = 'NULL'
+    
+    INSERT_QRY = f"""
+    INSERT INTO 
+    DM_EVENT_T
+    ([well_id]
+    ,[event_id]
+    ,[amount_last_cost_est]
+    ,[phase]
+    ,[cost_authorized]
+    ,[currency_code]
+    ,[exchange_rate]
+    ,[date_authorized]
+    ,[date_ops_end]
+    ,[date_last_cost_est]
+    ,[date_off_prod]
+    ,[date_on_prod]
+    ,[date_ops_start]
+    ,[event_reason]
+    ,[estimated_days]
+    ,[equip_type]
+    ,[event_code]
+    ,[event_no]
+    ,[event_objective_1]
+    ,[event_type]
+    ,[event_objective_2]
+    ,[event_team]
+    ,[is_final_report]
+    ,[is_readonly]
+    ,[status_end]
+    ,[remarks]
+    ,[reporting_standard]
+    ,[reporting_time]
+    ,[create_date]
+    ,[wellhead_connection]
+    ,[tvd_current]
+    ,[create_user_id]
+    ,[create_app_id]
+    ,[tvd_plugback]
+    ,[update_date]
+    ,[update_user_id]
+    ,[update_app_id]
+    ,[budget_type]
+    ,[planned_wci]
+    ,[actual_wci]
+    ,[well_geometry]
+    ,[wta1]
+    ,[wta2]
+    ,[wellbore_interface]
+    ,[rig_move_distance]
+    ,[initial_load_volume_oil]
+    ,[initial_load_volume_water]
+    ,[initial_load_volume_other]
+    ,[job_type_id]
+    ,[cost_type]
+    ,[service_type]
+    ,[primary_service_provider]
+    ,[lost_gas_vol]
+    ,[lost_oil_vol]
+    ,[is_project_readonly]
+    ,[contingency_percent]
+    ,[operated_type]
+    ,[operated_type_code]
+    ,[pa_su_completion_days]
+    ,[event_operator]
+    ,[event_objective_3])
+
+    VALUES
+
+    ('{well_id}',
+    '{neweventid}',
+    {null}, 
+    'ACTUAL',
+    {null},
+    {null},
+    {null},
+    {null},
+    '{finaldate}',
+    {null},
+    {null},
+    {null},
+    '{startdate}',
+    'COMPLETAMIENTO',
+    '2',
+    'EQ. MEN DE SERVICIO',
+    'OCM',
+    '1',
+    'COMPLETAMIENTO ORIGINAL PRODUCTOR',
+    'COMPLETAMIENTO ORIGINAL',
+    'A BOMBEO MECANICO (BM) - CONVENCIONAL',
+    'ACTIVO',
+    {null},
+    'N',
+    'INACTIVO',
+    {null},
+    '1',
+    {null},
+    {null},
+    {null},
+    '200',
+    {null},
+    {null},
+    {null},
+    {null},
+    {null},
+    {null},
+    'PROYECTADO/PROY',
+    'RIGLESS',
+    'PROD',
+    'HORIZONTAL',
+    'BM',
+    {null},
+    {null},
+    {null},
+    {null},
+    {null},
+    {null},
+    {null},
+    {null},
+    {null},
+    'MANSAROVAR ENERGY COLOMBIA LTD.',
+    {null},
+    {null},
+    {null},
+    {null},
+    {null},
+    {null},
+    {null},
+    {null},
+    'PRODUCTOR UNA ZONA')
+    """
+
+    return INSERT_QRY

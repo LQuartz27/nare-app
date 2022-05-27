@@ -115,7 +115,6 @@ def ajustar_prof_eventos():
 def ajustar_md_current():
     try:
         ROOT = request.url_root
-        # print('REQUEST ROOT: {}'.format(ROOT))
 
         form = AjusteMDsForm()
 
@@ -168,7 +167,6 @@ def ajustar_md_current():
 def ajustar_md_from_to():
     try:
         ROOT = request.url_root
-        # print('REQUEST ROOT: {}'.format(ROOT))
 
         form = AjusteMDsForm()
 
@@ -221,7 +219,6 @@ def ajustar_md_from_to():
 def ajustar_md_survey():
     try:
         ROOT = request.url_root
-        # print('REQUEST ROOT: {}'.format(ROOT))
 
         form = AjusteMDsForm()
 
@@ -273,7 +270,6 @@ def ajustar_md_survey():
 def ajustar_md():
     try:
         ROOT = request.url_root
-        # print('REQUEST ROOT: {}'.format(ROOT))
 
         form = AjusteMDsForm()
 
@@ -470,7 +466,119 @@ def asignar_activity_phases():
 @app.route('/identificar_ocm', methods=['GET', 'POST'])
 def identificar_ocm():
     try:
-        return render_template('en_construccion.html')
+
+        form = IdentificarOCMForm()
+
+        context = {
+            'form': form,
+        }
+
+        if form.validate_on_submit():
+            nombrepozo = form.nombrepozo.data
+
+            return redirect(url_for('crear_ocm', wellname=nombrepozo))
+
+        return render_template('identificar_ocm.html', **context)
+
+    except Exception as e:
+        print(e)
+        logging.error(e)
+        logging.info('TRACE BACK FOUND:')
+        logging.error(traceback.format_exc())
+        return redirect(url_for('error_page'))
+
+
+@app.route('/crearOCM', methods=['GET', 'POST'])
+def crear_ocm():
+    try:
+        wellname = request.args.get('wellname', None)
+
+        form = CrearOCMForm()
+
+        ROOT = request.url_root
+
+        predecirOCM_url = ROOT + url_for('api.predecir_inicio_OCM', wellname=wellname)
+                
+        response = requests.get(predecirOCM_url)
+
+        table_data_dict = json.loads(response.content.decode("utf-8"))['time_summary_df']
+        prediccion_deterministica = json.loads(response.content.decode("utf-8"))['prediccion_deterministica']
+        prediccion_NN = json.loads(response.content.decode("utf-8"))['prediccion_NN']
+
+        prediccion_NN = '11/04/2012 06:30'
+
+        print(type(prediccion_deterministica), prediccion_deterministica)
+        print(type(prediccion_NN), prediccion_NN)
+
+        if not prediccion_deterministica:
+            prediccion_deterministica = 'Inicio OCM No Identificado'
+
+        columns_names = table_data_dict['columns']
+        columns_vals = table_data_dict['data']
+        table_indexes = table_data_dict['index']
+        single_row_len = len(columns_vals[0])
+        index_len = len(table_indexes)
+
+        ocm_choices = [(prediccion_deterministica, f'(Determinístico) OCM podría iniciar : {prediccion_deterministica}'),
+                       (prediccion_NN, f'(Probabilístico) OCM podría iniciar : {prediccion_NN}')]
+        
+        form.opciones_inicio_ocm.choices = ocm_choices
+
+        context = {
+            'form': form,
+            'wellname':wellname,
+            'prediccion_NN':prediccion_NN,
+            'prediccion_deterministica':prediccion_deterministica,
+            'columns_names':columns_names,
+            'columns_vals': columns_vals,
+            'table_indexes': table_indexes,
+            'single_row_len':single_row_len,
+            'index_len':index_len
+        }
+
+        if form.validate_on_submit():
+            print()
+            print('CREAR OCM')
+            print()
+
+            fechahora_inicio_ocm = form.fechahora_inicio_ocm.data
+            opcion_seleccionada = request.form.get('opciones_inicio_ocm',None)
+
+            print('fechahora_inicio_ocm', fechahora_inicio_ocm)
+            print('opcion_seleccionada', opcion_seleccionada)
+
+            ultima_fecha_en_dailys_ops = columns_vals[-1][1]
+            print('ultima_fecha_en_dailys_ops: ',ultima_fecha_en_dailys_ops)
+
+            if (not fechahora_inicio_ocm) or (not opcion_seleccionada):
+                flash("Selecciona o digita un inicio de OCM")
+                return redirect(url_for('crear_ocm', wellname=wellname))
+
+            if not fechahora_inicio_ocm:
+                fechahora_inicio_ocm = opcion_seleccionada
+
+            get_well_id_url = ROOT + url_for('api.wellid', wellname=wellname)
+
+            response = requests.get(get_well_id_url)
+            data = json.loads(response.content.decode("utf-8"))
+            well_id = data['WELL ID']
+
+            insertar_OCM_url = ROOT + url_for('api.insertar_OCM',
+                                          startdate=fechahora_inicio_ocm,
+                                          finaldate=ultima_fecha_en_dailys_ops,
+                                          well_id=well_id)
+            
+            response = requests.get(insertar_OCM_url)
+            data = json.loads(response.content.decode("utf-8"))
+            event_id = data['event_id']
+            status = data['status']
+
+            flash(status + f' al pozo {wellname}. ID del Nuevo evento: {event_id}. '
+                  f'INICIO OCM INGRESADO: {fechahora_inicio_ocm}'   )
+
+            return redirect(url_for('identificar_ocm'))
+
+        return render_template('crear_ocm.html', **context)
 
     except Exception as e:
         print(e)
@@ -510,3 +618,4 @@ def preactualizacion():
         return redirect(url_for('preactualizacion'))
 
     return render_template('preactualizacion.html', **context)
+

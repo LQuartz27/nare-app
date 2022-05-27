@@ -1,10 +1,14 @@
+import json
 from flask import jsonify, request, url_for, send_file
-from itsdangerous import json
+# from itsdangerous import json
+import pandas as pd
+import requests
 from sqlalchemy import create_engine, text
+
 from . import api_blueprint
 from .queries import *
 from .preprocesado_ddr import *
-import requests
+from .predecir_inicio_ocm import *
 
 from app.database import *
 
@@ -291,5 +295,74 @@ def ajustar_MDs():
             registros_afectados += cursor_result.rowcount
     
     response = {"num_registros_afectados": registros_afectados}
+
+    return jsonify(response)
+
+
+@api_blueprint.route('/predecirInicioOCM')
+def predecir_inicio_OCM():
+
+    engine = create_engine(connection_url)
+
+    wellname = request.args.get('wellname', None)
+
+    DATA_BASE_QUERY = get_prediccion_ocm_base_qry(wellname)
+
+    base_df = pd.read_sql(text(DATA_BASE_QUERY), engine)
+    base_df.sort_values(by=['Desde'],ascending=[1],inplace=True)
+
+    fecha_ocm = predecir_modelo_deterministico(base_df, wellname)
+
+    base_df['Operación'] = base_df['Operación'].str.upper()
+
+    base_df['Desde'] = base_df['Desde'].dt.strftime('%m/%d/%Y %H:%M')
+    base_df['Hasta'] = base_df['Hasta'].dt.strftime('%m/%d/%Y %H:%M')
+
+    rows_num = base_df.shape[0]
+    twenty_perc_rows = int(rows_num*0.2)
+
+    print(base_df.info())
+    print(base_df.head())
+
+    needed_cols = ['Desde', 'Hasta','MDFrom','MDto','Operación']
+    last_rows_df = base_df.tail(-twenty_perc_rows)[needed_cols]
+    
+    response = {"time_summary_df": last_rows_df.to_dict('split'),
+                "prediccion_deterministica":fecha_ocm,
+                "prediccion_NN":fecha_ocm}
+
+    return jsonify(response)
+
+
+@api_blueprint.route('/insertar_OCM')
+def insertar_OCM():
+
+    engine = create_engine(connection_url)
+
+    startdate = request.args.get('startdate', None)
+    finaldate = request.args.get('finaldate', None)
+    well_id = request.args.get('well_id', None)
+
+    EVENTS_IDS_QRY = get_events_ids_qry()
+
+    event_ids_df= pd.read_sql(text(EVENTS_IDS_QRY), engine)
+    event_ids_list = event_ids_df["event_id"].tolist()
+
+    neweventid = generar_event_id_valido(event_ids_list)
+
+    INSERTAR_OCM_QUERY = get_insert_event_qry(well_id, neweventid, startdate, finaldate)
+
+    with engine.connect() as connection:
+        trans = connection.begin()
+        try:
+            # cursor_insert_result = connection.execute(text(INSERTAR_OCM_QUERY))
+            trans.commit()
+            
+        except:
+            trans.rollback()
+            raise Exception('No se logró insertar el evento OCM')
+    
+    response = {"event_id": neweventid,
+                "status": 'Evento OCM Insertado con éxito'}
 
     return jsonify(response)

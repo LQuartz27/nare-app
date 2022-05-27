@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, SelectField
-from wtforms.validators import DataRequired, ValidationError
+from wtforms import StringField, SubmitField, SelectField, DateTimeField, RadioField
+from wtforms.validators import DataRequired, ValidationError, Optional
 
 
 def validate_dropdowns(form, field):
@@ -65,3 +65,19 @@ class AisgnarFasesForm(FlaskForm):
     nombrepozo = StringField('NOMBRE DEL POZO', validators=[
                              DataRequired()], id='well-name')
     submit_btn = SubmitField('ASIGNAR FASES')
+
+
+class IdentificarOCMForm(FlaskForm):
+    nombrepozo = StringField('NOMBRE DEL POZO', validators=[
+                             DataRequired()], id='well-name')
+    submit_btn = SubmitField('IDENTIFICAR OCM')
+
+
+class CrearOCMForm(FlaskForm):
+    
+    fechahora_inicio_ocm = DateTimeField('SI CONSIDERA OTRO INICIO PARA EL OCM, DIGITELO (mm/dd/aa HH:MM)',
+                                         format=r'%m/%d/%Y %H:%M',
+                                         validators=[Optional()])
+
+    opciones_inicio_ocm = RadioField('POSIBLES INICIOS DE OCM', validators=[Optional()])                                    
+    submit_btn = SubmitField('CREAR OCM')
