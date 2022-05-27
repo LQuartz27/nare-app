@@ -319,8 +319,11 @@ def predecir_inicio_OCM():
     base_df['Desde'] = base_df['Desde'].dt.strftime('%m/%d/%Y %H:%M')
     base_df['Hasta'] = base_df['Hasta'].dt.strftime('%m/%d/%Y %H:%M')
 
+    base_df['MDFrom'] = base_df['MDFrom'].round(1)
+    base_df['MDto'] = base_df['MDto'].round(1)
+
     rows_num = base_df.shape[0]
-    twenty_perc_rows = int(rows_num*0.2)
+    twenty_perc_rows = int(rows_num*0.17)
 
     print(base_df.info())
     print(base_df.head())
@@ -356,7 +359,7 @@ def insertar_OCM():
     with engine.connect() as connection:
         trans = connection.begin()
         try:
-            # cursor_insert_result = connection.execute(text(INSERTAR_OCM_QUERY))
+            cursor_insert_result = connection.execute(text(INSERTAR_OCM_QUERY))
             trans.commit()
             
         except:

@@ -1,18 +1,27 @@
-{% extends "base.html" %}
-{% block content %}
-
+{% extends "base.html" %} {% block content %} {% for message in
+get_flashed_messages() %}
+<div class="alert alert-warning alert-dismissible fade show" role="alert">
+  {{ message }}
+  <button
+    type="button"
+    class="btn-close"
+    data-bs-dismiss="alert"
+    aria-label="Close"
+  ></button>
+</div>
+{% endfor %}
 
 <b>
-    <h3 class="card-title">Ocurrió un Error :(</h3>
+  <h3 class="card-title">Ocurrió un Error :(</h3>
 </b>
 
-<br>
+<br />
 
 <img
-    src="{{ url_for('static', filename='images/404.jpg') }}"
-    class="card-img-bottom align-self-center"
-    alt="404 ERROR IMAGE"
-    />
-<br>
+  src="{{ url_for('static', filename='images/404.jpg') }}"
+  class="card-img-bottom align-self-center"
+  alt="404 ERROR IMAGE"
+/>
+<br />
 
 {% endblock %}

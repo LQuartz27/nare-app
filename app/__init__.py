@@ -522,7 +522,7 @@ def crear_ocm():
                        ('', "Ninguna de las anteriores")]
         
         form.opciones_inicio_ocm.choices = ocm_choices
-        
+
         context = {
             'form': form,
             'wellname':wellname,
@@ -584,6 +584,7 @@ def crear_ocm():
         logging.error(e)
         logging.info('TRACE BACK FOUND:')
         logging.error(traceback.format_exc())
+        flash('Es posible que el pozo no cuente con reportes Daily Ops en el ODR')
         return redirect(url_for('error_page'))
 
 
