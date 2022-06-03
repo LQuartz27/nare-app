@@ -483,9 +483,7 @@ def get_poblar_casing_qry(well_id, od, id, drift, weight, bottom_connection,conn
     bot_conn_type = '{bottom_connection}',
     connection_name = '{connection_name}',
     grade_id = '{codigo_grado}',
-    grade= '{grado}',
-    bot_conn_type = 'API BTC',
-    connection_name = 'API BTC'
+    grade= '{grado}'
 
     WHERE od_body = '{od}' AND
     sect_type_code = 'CAS' AND
@@ -506,9 +504,7 @@ def get_poblar_liner_qry(well_id, od, id, drift, weight, bottom_connection,conne
     bot_conn_type = '{bottom_connection}',
     connection_name = '{connection_name}',
     grade_id = '{codigo_grado}',
-    grade= '{grado}',
-    bot_conn_type = 'API BTC',
-    connection_name = 'API BTC'
+    grade= '{grado}'
 
     WHERE od_body = '{od}' AND
     sect_type_code = 'CAS' AND
@@ -521,8 +517,27 @@ def get_poblar_liner_qry(well_id, od, id, drift, weight, bottom_connection,conne
 
 def get_set_min_id_qry(well_id, od, id):
     QRY=f"""
-    UPDATE CD_ASSEMBLY SET id_min = '{id}'
+    UPDATE CD_ASSEMBLY SET
+    id_min = '{id}',
+    od_max = assembly_size
     WHERE assembly_size = '{od}' AND well_id = '{well_id}'
+    """
+
+    return QRY
+
+
+def get_set_elev_mesa_casings_qry(well_id, elev_terreno):
+    # Para que se visualice la diferencia entre elevacion de mesa y del terreno
+    # se debe asignar al campo la altura del terreno, pero negativa
+    QRY = f"""
+    UPDATE CD_ASSEMBLY SET
+
+    tvd_assembly_top = '{-elev_terreno}' -- ALTURA DEL TERRENO NEGATIVO
+    ,md_assembly_top = '{-elev_terreno}' -- ALTURA DEL TERRENO NEGATIVO
+    
+    WHERE well_id = '{well_id}' AND
+    string_type = 'Casing' AND
+    assembly_name NOT LIKE '%LINER%'
     """
 
     return QRY

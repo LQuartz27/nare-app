@@ -629,6 +629,12 @@ def propiedades_casing():
             data = json.loads(response.content.decode("utf-8"))
             well_id = data['WELL ID']
 
+            get_elevacion_mesa_url = ROOT + \
+            url_for('api.get_elevacion_mesa', well_id=well_id)
+
+            response = requests.get(get_elevacion_mesa_url)
+            elevacion_terreno = json.loads(response.content.decode("utf-8"))['ELEVACION TERRENO']
+
             engine = create_engine(connection_url)
 
             SUPERFICIE_QRY = ''
@@ -639,14 +645,14 @@ def propiedades_casing():
                 temp_df = casings_data_df[casings_data_df['ABREVIATURA']==casing_superficie]
                 csg_data_serie = temp_df.iloc[0]
                 
-                od = csg_data_serie['OD']
+                od = csg_data_serie['od_body']
                 id = csg_data_serie['id_body']
                 drift = csg_data_serie['id_drift']
                 weight = csg_data_serie['approximate_weight']
-                bottom_connection = ''
-                connection_name = ''
                 codigo_grado = csg_data_serie['grade_id']
                 grado = csg_data_serie['grade']
+                bottom_connection = 'API BTC'
+                connection_name = 'API BTC'
 
                 SUPERFICIE_QRY = get_poblar_casing_qry(well_id,
                                                       od,
@@ -657,19 +663,21 @@ def propiedades_casing():
                                                       connection_name,
                                                       codigo_grado,
                                                       grado)
+
+                SUPERFICIE_SET_MIN_ID_QRY = get_set_min_id_qry(well_id, od, id)
             
             if casing_intermedio:
                 temp_df = casings_data_df[casings_data_df['ABREVIATURA']==casing_intermedio]
                 csg_data_serie = temp_df.iloc[0]
                 
-                od = csg_data_serie['OD']
+                od = csg_data_serie['od_body']
                 id = csg_data_serie['id_body']
                 drift = csg_data_serie['id_drift']
                 weight = csg_data_serie['approximate_weight']
-                bottom_connection = ''
-                connection_name = ''
                 codigo_grado = csg_data_serie['grade_id']
                 grado = csg_data_serie['grade']
+                bottom_connection = 'API BTC'
+                connection_name = 'API BTC'
 
                 INTERMEDIO_QRY = get_poblar_casing_qry(well_id,
                                                       od,
@@ -681,18 +689,20 @@ def propiedades_casing():
                                                       codigo_grado,
                                                       grado)
 
+                INTERMEDIO_SET_MIN_ID_QRY = get_set_min_id_qry(well_id, od, id)
+
             if liner:
                 temp_df = casings_data_df[casings_data_df['ABREVIATURA']==liner]
                 csg_data_serie = temp_df.iloc[0]
                 
-                od = csg_data_serie['OD']
+                od = csg_data_serie['od_body']
                 id = csg_data_serie['id_body']
                 drift = csg_data_serie['id_drift']
                 weight = csg_data_serie['approximate_weight']
-                bottom_connection = ''
-                connection_name = ''
                 codigo_grado = csg_data_serie['grade_id']
                 grado = csg_data_serie['grade']
+                bottom_connection = 'API BTC'
+                connection_name = 'API BTC'
 
                 LINER_QRY = get_poblar_liner_qry(well_id,
                                                       od,
@@ -704,26 +714,44 @@ def propiedades_casing():
                                                       codigo_grado,
                                                       grado)
 
+                LINER_SET_MIN_ID_QRY = get_set_min_id_qry(well_id, od, id)
+
             registros_afectados = 0
+
+            ODs_Max_ID_Min_QRY = get_set_elev_mesa_casings_qry(well_id, elevacion_terreno)
+            
 
             with engine.connect() as connection:
                 trans = connection.begin()
                 try:
                     if SUPERFICIE_QRY:
                         print(SUPERFICIE_QRY+'\n')
-                        # cursor_result = connection.execute(text(SUPERFICIE_QRY))
-                        # registros_afectados += cursor_result.rowcount
+                        cursor_result = connection.execute(text(SUPERFICIE_QRY))
+                        registros_afectados += cursor_result.rowcount
+
+                        cursor_result = connection.execute(text(SUPERFICIE_SET_MIN_ID_QRY))
+                        registros_afectados += cursor_result.rowcount
 
                     if INTERMEDIO_QRY:
                         print(INTERMEDIO_QRY+'\n')
-                        # cursor_result = connection.execute(text(INTERMEDIO_QRY))
-                        # registros_afectados += cursor_result.rowcount
+                        cursor_result = connection.execute(text(INTERMEDIO_QRY))
+                        registros_afectados += cursor_result.rowcount
+
+                        cursor_result = connection.execute(text(INTERMEDIO_SET_MIN_ID_QRY))
+                        registros_afectados += cursor_result.rowcount
 
                     if LINER_QRY:
                         print(LINER_QRY+'\n')
-                        # cursor_result = connection.execute(text(LINER_QRY))
-                        # registros_afectados += cursor_result.rowcount
+                        cursor_result = connection.execute(text(LINER_QRY))
+                        registros_afectados += cursor_result.rowcount
+
+                        cursor_result = connection.execute(text(LINER_SET_MIN_ID_QRY))
+                        registros_afectados += cursor_result.rowcount
                     
+                    print(ODs_Max_ID_Min_QRY)
+                    cursor_result = connection.execute(text(ODs_Max_ID_Min_QRY))
+                    registros_afectados += cursor_result.rowcount
+
                     trans.commit()
 
                     flash(f'{registros_afectados} Registros afectados')
@@ -732,7 +760,7 @@ def propiedades_casing():
                     trans.rollback()
                     raise Exception('No se lograron poblar los Casings')
 
-            return render_template('propiedades_casing.html', **context)
+            return redirect(url_for('propiedades_casing'))
 
         return render_template('propiedades_casing.html', **context)
 
