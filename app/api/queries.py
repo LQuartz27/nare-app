@@ -471,3 +471,58 @@ def get_insert_event_qry(well_id, neweventid, startdate, finaldate):
     """
 
     return INSERT_QRY
+
+
+def get_poblar_casing_qry(well_id, od, id, drift, weight, bottom_connection,connection_name, codigo_grado, grado):
+    QRY = f"""
+    UPDATE CD_ASSEMBLY_COMP SET
+
+    id_body = '{id}',
+    id_drift = '{drift}',
+    approximate_weight = '{weight}',
+    bot_conn_type = '{bottom_connection}',
+    connection_name = '{connection_name}',
+    grade_id = '{codigo_grado}',
+    grade= '{grado}',
+    bot_conn_type = 'API BTC',
+    connection_name = 'API BTC'
+
+    WHERE od_body = '{od}' AND
+    sect_type_code = 'CAS' AND
+    comp_name IN ('Casing','Pup Joint') AND
+    well_id = '{well_id}'
+    """
+
+    return QRY
+
+
+def get_poblar_liner_qry(well_id, od, id, drift, weight, bottom_connection,connection_name, codigo_grado, grado):
+    QRY = f"""
+    UPDATE CD_ASSEMBLY_COMP SET
+
+    id_body = '{id}',
+    id_drift = '{drift}',
+    approximate_weight = '{weight}',
+    bot_conn_type = '{bottom_connection}',
+    connection_name = '{connection_name}',
+    grade_id = '{codigo_grado}',
+    grade= '{grado}',
+    bot_conn_type = 'API BTC',
+    connection_name = 'API BTC'
+
+    WHERE od_body = '{od}' AND
+    sect_type_code = 'CAS' AND
+    comp_name IN ('Liner','Slotted Liner','Pup Joint') AND
+    well_id = '{well_id}'
+    """
+
+    return QRY
+
+
+def get_set_min_id_qry(well_id, od, id):
+    QRY=f"""
+    UPDATE CD_ASSEMBLY SET id_min = '{id}'
+    WHERE assembly_size = '{od}' AND well_id = '{well_id}'
+    """
+
+    return QRY

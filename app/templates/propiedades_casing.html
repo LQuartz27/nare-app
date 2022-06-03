@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block content %}
+
+{% for message in get_flashed_messages() %}
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+{% endfor %}
+
+<b>
+    <h3 class="card-title">Poblado de Casings</h3>
+</b>
+
+<br>
+<form action={{ url_for( 'propiedades_casing' ) }} method="post">
+    {{ form.hidden_tag() }}
+
+{#                     Nombre del pozo                               #}
+    <p>{{ form.nombrepozo.label(class="form-label") }}</p>
+    <div class="container">
+
+        <div class="row justify-content-center">
+            <div class="col-6 w-75">
+                {{ form.nombrepozo(class="form-control") }}
+                {% for error in form.nombrepozo.errors %}
+                {{ error }}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <br>
+
+{#                     CASING DE SUPERFICIE                              #}
+    <p>{{ form.casing_superficie.label(class="form-label") }}</p>
+    <div class="container">
+
+        <div class="row justify-content-center">
+            <div class="col-6 w-75">
+                {{ form.casing_superficie(class="form-select") }}
+                {% for error in form.casing_superficie.errors %}
+                {{ error }}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <br>
+
+{#                     CASING INTERMEDIO                               #}
+    <p>{{ form.casing_intermedio.label(class="form-label") }}</p>
+    <div class="container">
+
+        <div class="row justify-content-center">
+            <div class="col-6 w-75">
+                {{ form.casing_intermedio(class="form-select") }}
+                {% for error in form.casing_intermedio.errors %}
+                {{ error }}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <br>
+
+{#                     LINER                              #}
+    <p>{{ form.liner.label(class="form-label") }}</p>
+    <div class="container">
+
+        <div class="row justify-content-center">
+            <div class="col-6 w-75">
+                {{ form.liner(class="form-select") }}
+                {% for error in form.liner.errors %}
+                {{ error }}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <br>
+
+{#                        Consultar Datos del Pozo  #}
+    <div class="d-grid gap-2 w-50 mx-auto">
+        {{ form.submit_btn(class="btn btn-danger", href="{{ url_for('home') }}") }}
+        <a class="btn btn-secondary" href={{ url_for( 'home' ) }}  role="button">VOLVER</a>
+        <br>
+    </div>
+</form>
+<br>
+
+{% endblock %}
+{% block aditionalScripts %}
+<script>
+    $(function() {
+        $.ajax({
+            url: '{{ url_for("api.well_names") }}'
+            }).done(function (data){
+                $('#well-name').autocomplete({
+                    source: data,
+                    minLength: 2
+                });
+            });
+        });
+</script>
+{% endblock %}

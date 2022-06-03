@@ -81,3 +81,16 @@ class CrearOCMForm(FlaskForm):
 
     opciones_inicio_ocm = RadioField('POSIBLES INICIOS DE OCM', validators=[Optional()])                                    
     submit_btn = SubmitField('CREAR OCM')
+
+
+class PropsCasingsForm(FlaskForm):
+    nombrepozo = StringField('NOMBRE DEL POZO', validators=[
+                             DataRequired()], id='well-name')
+
+    casing_superficie = SelectField('SELECCIONA EL CASING DE SUPERFICIE',validators=[Optional()])
+    
+    casing_intermedio = SelectField('SELECCIONA EL CASING INTERMEDIO',validators=[Optional()])
+    
+    liner = SelectField('SELECCIONA EL LINER',validators=[Optional()])
+    
+    submit_btn = SubmitField('POBLAR CASINGS')

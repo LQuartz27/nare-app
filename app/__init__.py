@@ -3,7 +3,7 @@ import requests
 import logging
 import traceback
 from flask import (Flask, flash, redirect, render_template,
-                   request, url_for, Response, send_file)
+                   request, url_for, send_file)
 
 from app.api import *
 from app.api.preprocesado_ddr import *
@@ -17,6 +17,11 @@ from app.forms import *
 
 cwd = os.getcwd()
 LOGS_FOLDER = os.path.join(cwd, 'logs')
+XLS_FOLDER = os.path.join(cwd, 'app','static','xlfiles')
+
+casings_data_file = os.path.join(XLS_FOLDER, 'CARACTERISTICAS_CASING.xlsx')
+
+casings_data_df = pd.read_excel(casings_data_file)
 
 if not os.path.exists(LOGS_FOLDER):
     os.mkdir(LOGS_FOLDER)
@@ -591,8 +596,145 @@ def crear_ocm():
 @app.route('/propiedades_casing', methods=['GET', 'POST'])
 def propiedades_casing():
     try:
+        choices_base = [('','No existe este Casing')]
+        casings_choices = [(i,i) for i in casings_data_df['ABREVIATURA']]
 
-        return render_template('en_construccion.html')
+        form = PropsCasingsForm()
+
+        casings_choices = choices_base + casings_choices
+        
+        form.casing_superficie.choices = casings_choices.copy()
+        form.casing_intermedio.choices = casings_choices.copy()
+        form.liner.choices = casings_choices.copy()
+
+        context = {
+            'form': form,
+        }
+
+        if form.validate_on_submit():
+            nombrepozo = form.nombrepozo.data
+            casing_superficie = request.form.get('casing_superficie',None)
+            casing_intermedio = request.form.get('casing_intermedio',None)
+            liner = request.form.get('liner',None)
+
+            print(nombrepozo)
+            print(casing_superficie)
+            print(casing_intermedio)
+            print(liner)
+
+            ROOT = request.url_root
+            get_well_id_url = ROOT + url_for('api.wellid', wellname=nombrepozo)
+
+            response = requests.get(get_well_id_url)
+            data = json.loads(response.content.decode("utf-8"))
+            well_id = data['WELL ID']
+
+            engine = create_engine(connection_url)
+
+            SUPERFICIE_QRY = ''
+            INTERMEDIO_QRY = ''
+            LINER_QRY = ''
+
+            if casing_superficie:
+                temp_df = casings_data_df[casings_data_df['ABREVIATURA']==casing_superficie]
+                csg_data_serie = temp_df.iloc[0]
+                
+                od = csg_data_serie['OD']
+                id = csg_data_serie['id_body']
+                drift = csg_data_serie['id_drift']
+                weight = csg_data_serie['approximate_weight']
+                bottom_connection = ''
+                connection_name = ''
+                codigo_grado = csg_data_serie['grade_id']
+                grado = csg_data_serie['grade']
+
+                SUPERFICIE_QRY = get_poblar_casing_qry(well_id,
+                                                      od,
+                                                      id,
+                                                      drift,
+                                                      weight,
+                                                      bottom_connection,
+                                                      connection_name,
+                                                      codigo_grado,
+                                                      grado)
+            
+            if casing_intermedio:
+                temp_df = casings_data_df[casings_data_df['ABREVIATURA']==casing_intermedio]
+                csg_data_serie = temp_df.iloc[0]
+                
+                od = csg_data_serie['OD']
+                id = csg_data_serie['id_body']
+                drift = csg_data_serie['id_drift']
+                weight = csg_data_serie['approximate_weight']
+                bottom_connection = ''
+                connection_name = ''
+                codigo_grado = csg_data_serie['grade_id']
+                grado = csg_data_serie['grade']
+
+                INTERMEDIO_QRY = get_poblar_casing_qry(well_id,
+                                                      od,
+                                                      id,
+                                                      drift,
+                                                      weight,
+                                                      bottom_connection,
+                                                      connection_name,
+                                                      codigo_grado,
+                                                      grado)
+
+            if liner:
+                temp_df = casings_data_df[casings_data_df['ABREVIATURA']==liner]
+                csg_data_serie = temp_df.iloc[0]
+                
+                od = csg_data_serie['OD']
+                id = csg_data_serie['id_body']
+                drift = csg_data_serie['id_drift']
+                weight = csg_data_serie['approximate_weight']
+                bottom_connection = ''
+                connection_name = ''
+                codigo_grado = csg_data_serie['grade_id']
+                grado = csg_data_serie['grade']
+
+                LINER_QRY = get_poblar_liner_qry(well_id,
+                                                      od,
+                                                      id,
+                                                      drift,
+                                                      weight,
+                                                      bottom_connection,
+                                                      connection_name,
+                                                      codigo_grado,
+                                                      grado)
+
+            registros_afectados = 0
+
+            with engine.connect() as connection:
+                trans = connection.begin()
+                try:
+                    if SUPERFICIE_QRY:
+                        print(SUPERFICIE_QRY+'\n')
+                        # cursor_result = connection.execute(text(SUPERFICIE_QRY))
+                        # registros_afectados += cursor_result.rowcount
+
+                    if INTERMEDIO_QRY:
+                        print(INTERMEDIO_QRY+'\n')
+                        # cursor_result = connection.execute(text(INTERMEDIO_QRY))
+                        # registros_afectados += cursor_result.rowcount
+
+                    if LINER_QRY:
+                        print(LINER_QRY+'\n')
+                        # cursor_result = connection.execute(text(LINER_QRY))
+                        # registros_afectados += cursor_result.rowcount
+                    
+                    trans.commit()
+
+                    flash(f'{registros_afectados} Registros afectados')
+                    
+                except:
+                    trans.rollback()
+                    raise Exception('No se lograron poblar los Casings')
+
+            return render_template('propiedades_casing.html', **context)
+
+        return render_template('propiedades_casing.html', **context)
 
     except Exception as e:
         print(e)
