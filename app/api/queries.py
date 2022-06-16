@@ -545,18 +545,15 @@ def get_set_elev_mesa_casings_qry(well_id, elev_terreno):
 
 def get_set_0015_qry(well_id):
     QRY = f"""
-    UPDATE CD_ASSEMBLY set
+    Update DM_CASING set
 
-    string_class = '0015',
+    run_number = '1',
     activity_phase = '0015'
 
-    WHERE assembly_name != 'SAND' AND
-    string_type = 'Tubing' AND
-    assembly_name IN ('ROD STRING','TUBING ASSEMBLY','TUBING ASSEMBLY #1','TUBING ASSEMBLY #2','TUBING ASSEMBLY #3',
-    'TUBING ASSEMBLY #4','PROD STRING','PRODUCTION TUBING STRING','PRODUCTION TUBING STRING ','TUBING PROD. STRING ','TUBING PROD. STRING')
-    AND well_id = '{well_id}'
+    WHERE event_id IN (SELECT event_id FROM DM_EVENT WHERE well_id = '{well_id}' AND
+                       event_code  NOT IN ('MOB','MOV','ODR','OCM','ABA','ABN') ) AND
+    well_id = '{well_id}'
     """
-
     return QRY
 
 
