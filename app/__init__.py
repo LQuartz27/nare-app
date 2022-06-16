@@ -326,7 +326,6 @@ def ajustar_md():
 def comp_status():
     try:
         ROOT = request.url_root
-        # print('REQUEST ROOT: {}'.format(ROOT))
 
         form = ProcesoMasivoPozoEspecificoForm()
 
@@ -354,6 +353,29 @@ def comp_status():
             response = requests.get(del_comp_status_url)
             num_registros_antes = json.loads(response.content.decode("utf-8"))['num_registros_antes']
             num_registros_despues = json.loads(response.content.decode("utf-8"))['num_registros_despues']
+
+            set_0015_qry = get_set_0015_qry(well_id)
+            post_inj_status_qry = get_post_inj_status_qry(well_id)
+            pre_inj_status_qry = get_pre_inj_status_qry(well_id)
+            flushing_status_qry = get_flushing_status_qry(well_id)
+            delete_csg_hole_sect = get_delete_csg_hole_sect(well_id)
+
+            engine = create_engine(connection_url)
+
+            with engine.connect() as connection:
+                trans = connection.begin()
+                try:
+                    cursor_result = connection.execute(text(set_0015_qry))
+                    cursor_result = connection.execute(text(post_inj_status_qry))
+                    cursor_result = connection.execute(text(pre_inj_status_qry))
+                    cursor_result = connection.execute(text(flushing_status_qry))
+                    cursor_result = connection.execute(text(delete_csg_hole_sect))
+
+                    trans.commit()
+                    
+                except:
+                    trans.rollback()
+                    raise Exception('Error al correr complementos de homologacion genérica')
 
             flash('Antes: {} registros'.format(num_registros_antes))
             flash('Despues: {} registros'.format(num_registros_despues))

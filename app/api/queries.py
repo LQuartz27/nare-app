@@ -541,3 +541,53 @@ def get_set_elev_mesa_casings_qry(well_id, elev_terreno):
     """
 
     return QRY
+
+
+def get_set_0015_qry(well_id):
+    QRY = f"""
+    UPDATE CD_ASSEMBLY set
+
+    string_class = '0015'
+
+    WHERE assembly_name != 'SAND' AND
+    string_type = 'Tubing' AND
+    assembly_name IN ('ROD STRING','TUBING ASSEMBLY','TUBING ASSEMBLY #1','TUBING ASSEMBLY #2','TUBING ASSEMBLY #3',
+    'TUBING ASSEMBLY #4','PROD STRING','PRODUCTION TUBING STRING','PRODUCTION TUBING STRING ','TUBING PROD. STRING ','TUBING PROD. STRING')
+    AND well_id = '{well_id}'
+    """
+
+    return QRY
+
+
+def get_post_inj_status_qry(well_id):
+    QRY = f"""
+    Update DM_EVENT set event_team = 'INACTIVO'
+    WHERE well_id = '{well_id}' AND event_code = 'WSV' AND event_reason ='POST-INJECTION'
+    """
+
+    return QRY
+
+
+def get_pre_inj_status_qry(well_id):
+    QRY = f"""
+    Update DM_EVENT set status_end = 'INACTIVO'
+    WHERE well_id = '{well_id}' AND event_code = 'WSV' AND event_reason ='PRE-INJECTION'
+    """
+
+    return QRY
+
+
+def get_flushing_status_qry(well_id):
+    QRY = f"""
+    Update DM_EVENT set event_objective_1 ='FLUSHING', event_objective_2 = 'FLUSING CORRECTIVO' , event_objective_3 = 'PRUEBA DE INTEGRIDAD DE TUBERÍA-TUBERÍA ROTA'
+    WHERE well_id = '{well_id}' AND event_code = 'WSV' AND event_reason ='FLUSHING AND D'
+    """
+
+    return QRY
+
+
+def get_delete_csg_hole_sect(well_id):
+    QRY = f"""
+    DELETE FROM CD_HOLE_SECT WHERE well_id = '{well_id}' AND comp_type_code = 'CAS'
+    """
+    return QRY
