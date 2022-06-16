@@ -547,7 +547,8 @@ def get_set_0015_qry(well_id):
     QRY = f"""
     UPDATE CD_ASSEMBLY set
 
-    string_class = '0015'
+    string_class = '0015',
+    activity_phase = '0015'
 
     WHERE assembly_name != 'SAND' AND
     string_type = 'Tubing' AND
